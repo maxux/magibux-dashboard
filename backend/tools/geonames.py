@@ -138,16 +138,17 @@ class GeoNamesRedis():
         return [base[0], admin2, admin1, cinfo["name"]]
 
 
-geonames = GeoNamesRedis()
-geonames.database_cleanup()
+if __name__ == "__main__":
+    geonames = GeoNamesRedis()
+    geonames.database_cleanup()
 
-countries = geonames.countries_from_continent("EU", ["RU"])
+    countries = geonames.countries_from_continent("EU", ["RU"])
 
-geonames.countries_download(countries)
-geonames.basecodes()
+    geonames.countries_download(countries)
+    geonames.basecodes()
 
-for country in countries:
-    geonames.country_process(country)
+    for country in countries:
+        geonames.country_process(country)
 
-query = geonames.resolv(50.564268, 5.801432)
-print(query)
+    query = geonames.resolv(50.564268, 5.801432)
+    print(query)
