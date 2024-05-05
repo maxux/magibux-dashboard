@@ -51,6 +51,8 @@ function connect() {
                 $("#country").html(place[3]);
 
                 $("#trip .val").html(location['trip'].toFixed(2));
+
+                update_map(location['coord']['lat'], location['coord']['lng']);
             break;
 
             default:
@@ -77,6 +79,28 @@ $(document).ready(function() {
 var map = null;
 var marker = null;
 var socket = null;
+
+function update_map(lat, lng) {
+    let coord = {lat: lat, lng: lng};
+
+    // cleanup previous marker
+    if(marker)
+        marker.setMap(null);
+
+    // update new marker
+    marker = new google.maps.Marker({
+        position: coord,
+        map: map,
+        icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 5
+        },
+        title: 'Location'
+    });
+
+    map.setCenter(coord);
+}
+
 
 /*
 function tracker(data) {
