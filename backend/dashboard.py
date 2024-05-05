@@ -105,7 +105,7 @@ class DashboardServer():
         loop.set_debug(True)
 
         # handle websocket communication
-        websocketd = websockets.serve(self.handler, "127.0.0.1", 30900)
+        websocketd = websockets.serve(self.handler, "0.0.0.0", 30900)
         asyncio.ensure_future(websocketd, loop=loop)
         asyncio.ensure_future(self.redisloop(), loop=loop)
 
