@@ -1,7 +1,13 @@
 html {
     background-image: url(../images/default.jpg);
     background-size: cover;
+    background-attachment: fixed;
     height: 100%;
+}
+
+/* hide scrollbar but keep scrolling */
+body::-webkit-scrollbar { 
+    display: none;
 }
 
 body {
@@ -24,7 +30,7 @@ body {
 
 #map {
     width: 100%;
-    height: 250px;
+    height: 145px;
 }
 
 .card {
@@ -48,10 +54,11 @@ body {
 
 #coord {
     padding-top: 5px;
+    margin-bottom: -5px;
     font-size: 14px;
 }
 
-h2 {
+h2, h3 {
     margin: 0;
     padding: 0;
 }

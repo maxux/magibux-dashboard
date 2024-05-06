@@ -39,7 +39,16 @@ function temperature_colorize(value) {
 }
 
 function pressure_colorize(name, value) {
+    // rw min 4 bar
+    // rge / rga - < 7.6
     return "text-bg-danger";
+}
+
+function doors_state(main, door) {
+    if(main == null)
+        return {"state": "Unknown", "color": "text-bg-secondary"};
+
+    return {"state": "FixMe", "color": "text-bg-warning"};
 }
 
 var socket;
@@ -64,6 +73,16 @@ function connect() {
                     $("#temperature-" + index).addClass("badge rounded-pill");
                     $("#temperature-" + index).addClass(temperature_colorize(values[index]));
                     $("#temperature-" + index).html(values[index].toFixed(1) + "°C");
+                }
+
+                // FIXME
+                let doorsx = ["door-1", "door-2", "door-3", "door-4"];
+
+                for(var door in doorsx) {
+                    var name = doorsx[door];
+                    var state = doors_state(null, name);
+                    $("#" + name).removeClass().addClass("badge rounded-pill").addClass(state['color']);
+                    $("#" + name).html(state['state']);
                 }
             break;
 
