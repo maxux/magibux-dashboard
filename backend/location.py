@@ -11,6 +11,8 @@ class MagibuxLocator:
         self.parser = tools.nmea0183.GPSData()
         self.places = redis.Redis()
 
+        self.gga = {}
+
         self.slave = dashboard.DashboardSlave("location")
         self.previous = None
         self.trip = 0
@@ -52,8 +54,12 @@ class MagibuxLocator:
         parsed = self.parser.parse(data)
         print(parsed)
 
-        if parsed['type'] != 'rmc':
-            # only process GPRMC data for now
+        if parsed['type'] not in ['rmc', 'gga']:
+            # only process GPRMC and GPGGA for now
+            return
+
+        if parsed['type'] == 'gga':
+            self.gga = parsed
             return
 
         coord = parsed['coord']
@@ -69,6 +75,10 @@ class MagibuxLocator:
 
         self.trip += distance
         parsed['trip'] = self.trip
+
+        # inject hdop from gga
+        if 'hdop' in self.gga:
+            parsed['hdop'] = self.gga['hdop']
 
         self.slave.set(parsed)
         self.slave.publish()

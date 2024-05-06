@@ -66,7 +66,10 @@ class GPSRawData:
         warning = fields[2] == "A"
 
         # knots to kph
-        speed = float(fields[7]) * 1.852
+        speed = 0
+
+        if len(fields[7]) > 0:
+            speed = float(fields[7]) * 1.852
 
         return {
             'type': 'rmc',
