@@ -37,6 +37,20 @@ function connect() {
         console.log(json);
 
         switch(json['type']) {
+            case "temperature":
+                var values = json['payload'];
+                for(var index in values) {
+                    $(".temperature-" + index).html(values[index].toFixed(1) + "°C");
+                }
+            break;
+
+            case "pressure":
+                var values = json['payload'];
+                for(var index in values) {
+                    $(".pressure-" + index).html(values[index].toFixed(1) + " bar");
+                }
+            break;
+
             case "location":
                 let location = json['payload'];
 

@@ -8,7 +8,7 @@ body {
     padding: 15px;
     background-color: #333030;
     background: rgba(0, 0, 0, 0.6) !important;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 /* background fix */
@@ -25,7 +25,7 @@ body {
     height: 250px;
 }
 
-.panel {
+.card {
     background: rgba(50, 50, 50, 0.6) !important;
 }
 
@@ -56,17 +56,6 @@ h2 {
 
 h2#speed {
     margin-bottom: 15px;
-}
-
-.glyphicon-text {
-    padding-right: 6px;
-}
-
-.panel-body-light {
-}
-
-.panel-final {
-    margin-bottom: 0;
 }
 
 @keyframes blinker {

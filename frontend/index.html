@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 
 <head>
     <meta charset="utf-8">
@@ -10,9 +10,11 @@
 
     <title>Magibux Dashboard</title>
 
-    <link href="css/bootstrap.dark.min.css" rel="stylesheet">
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
-    <link href="css/dashboard.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/dashboard.css?1" rel="stylesheet">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 
 <body>
@@ -20,8 +22,8 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-body text-center">
+                <div class="card card-default">
+                    <div class="card-body text-center">
                         <h2 id="current-time">00:00:00</h2>
                         <h3 id="current-date">0000-00-00</h3>
                         <h4 id="current-day">Loading</h4>
@@ -30,9 +32,9 @@
             </div>
 
             <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-body text-center">
-                        <h2 id="speed"><span class="val">0</span> <small>km/h</small></h2>
+                <div class="card card-default">
+                    <div class="card-body text-center">
+                        <h2 id="speed"><span class="val">0</span> <small class="text-muted">km/h</small></h2>
                         <div id="locality"></div>
                         <div id="country"></div>
 
@@ -42,16 +44,16 @@
             </div>
 
             <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-body text-center">
+                <div class="card card-default">
+                    <div class="card-body text-center">
                         No music playing
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-body text-center">
-                        <h2 id="trip"><span class="val">0</span> <small>meters</small></h2>
+                <div class="card card-default">
+                    <div class="card-body text-center">
+                        <h2 id="trip"><span class="val">0</span> <small class="text-muted">m</small></h2>
                     </div>
                 </div>
             </div>
@@ -59,9 +61,76 @@
         </div>
 
         <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-default">
-                    <div class="panel-body" style="padding: 2px">
+            <div class="col-md-4">
+                <div class="card card-default">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">Power Switch</div>
+                            <div class="col-md-6">
+                                <span class="badge rounded-pill text-bg-danger">Switched Off</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">Engine</div>
+                            <div class="col-md-6">
+                                <span class="badge rounded-pill text-bg-danger">Stopped</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card card-default">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">Front Brake</div>
+                            <div class="col-md-4 text-right">
+                                <span class="pressure-channel-1 badge rounded-pill text-bg-danger">...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-default">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">Driver (front)</div>
+                            <div class="col-md-4 text-right">
+                                <span class="temperature-28-ff641e93a11cb3 badge rounded-pill text-bg-primary">0°C</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">Passengers (front)</div>
+                            <div class="col-md-4 text-right">
+                                <span class="temperature-28-ff641f43f47d96 badge rounded-pill text-bg-primary">0°C</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">Outside (front)</div>
+                            <div class="col-md-4 text-right">
+                                <span class="temperature-28-ff641e93d759d6 badge rounded-pill text-bg-primary">0°C</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">Hardware (rack)</div>
+                            <div class="col-md-4 text-right">
+                                <span class="temperature-28-ff641e93b9a587 badge rounded-pill text-bg-primary">0°C</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">Panel (front)</div>
+                            <div class="col-md-4 text-right">
+                                <span class="temperature-28-ff641f43f86666 badge rounded-pill text-bg-primary">0°C</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-default">
+                    <div class="card-body" style="padding: 2px">
                         <div id="map"></div>
                     </div>
                 </div>
@@ -73,14 +142,16 @@
     </div>
 
     <script src="js/jquery-3.6.4.min.js"></script>
+    <!--
     <script src="js/jquery.flot.js"></script>
     <script src="js/jquery.flot.time.js"></script>
     <script src="js/jquery.flot.threshold.js"></script>
     <script src="js/jquery.flot.curvedlines.js"></script>
     <script src="js/jquery.flot.categories.js"></script>
     <script src="js/jquery.flot.stack.js"></script>
+    -->
     <script src="js/bootstrap.min.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script src="js/dashboard.js?1"></script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTNer6Sa2Q1pQv6scaledQYBArRkEq2wQ&callback=initMap&libraries=geometry"></script>
 </body>
