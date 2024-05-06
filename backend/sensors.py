@@ -37,7 +37,7 @@ class MagibuxSensors:
             source = self.pressure.payload
 
             value = items[1].split(" ")
-            key = "channel-1"
+            key = "rgn"
 
             if key not in source:
                 source[key] = 0
