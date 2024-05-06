@@ -9,12 +9,20 @@ class DashboardSlave():
         self.name = name
         self.redis = redis.Redis()
         self.payload = {}
+        self.updated = None
 
-    def set(self, value):
+    def set(self, value, updated=None):
         self.payload = value
+        self.updated = updated
 
     def publish(self):
-        self.redis.publish("dashboard", json.dumps({"id": self.name, "payload": self.payload}))
+        message = {
+            "id": self.name,
+            "payload": self.payload,
+            "updated": self.updated
+        }
+
+        self.redis.publish("dashboard", json.dumps(message))
 
     def sleep(self, seconds):
         time.sleep(seconds)
@@ -22,23 +30,24 @@ class DashboardSlave():
 class DashboardServer():
     def __init__(self):
         self.wsclients = set()
-        self.payloads = {}
+        self.backlogs = {}
         self.redis = redis.Redis()
 
-    #
-    # Websocket
-    #
-    async def wsbroadcast(self, type, payload):
+    async def wsbroadcast(self, type, payload, updated):
         if not len(self.wsclients):
             return
-
-        goodcontent = json.dumps({"type": type, "payload": payload})
 
         for client in list(self.wsclients):
             if not client.open:
                 continue
 
-            content = json.dumps({"type": type, "payload": payload})
+            stripped = payload
+
+            if updated:
+                stripped = {}
+                stripped[updated] = payload[updated]
+
+            content = json.dumps({"type": type, "payload": stripped})
 
             try:
                 await client.send(content)
@@ -56,8 +65,8 @@ class DashboardServer():
         print("[+] websocket: client connected")
 
         try:
-            for id in self.payloads:
-                item = self.payloads[id]
+            for id in self.backlogs:
+                item = self.backlogs[id]
                 print("[+] sending backlog: %s (%s)" % (id, item['id']))
                 await self.wspayload(websocket, item['id'], item['payload'])
 
@@ -86,16 +95,15 @@ class DashboardServer():
 
                 # caching payload
                 id = handler['id']
+                """
                 if "id" in handler['payload']:
                     id = "%s-%s" % (handler['id'], handler['payload']['id'])
+                """
 
-                self.payloads[id] = {
-                    "id": handler['id'],
-                    "payload": handler['payload'],
-                }
+                self.backlogs[id] = handler
 
                 # forwarding
-                await self.wsbroadcast(handler['id'], handler['payload'])
+                await self.wsbroadcast(handler['id'], handler['payload'], handler['updated'])
 
             await asyncio.sleep(0.1)
 
