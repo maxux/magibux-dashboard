@@ -1,9 +1,7 @@
 import serial
-import tools.nmea0183
 import dashboard
 import redis
-import json
-import math
+import sys
 
 # // 28-ff641e93a11cb3: poste de conduite
 # // 28-ff641f43f47d96: voyageur arrière conduite
@@ -28,12 +26,11 @@ class MagibuxSensors:
         items = data.split(": ")
         # print(items)
 
-        if items[0] == "device":
+        if items[0] == "temperature":
             source = self.temperature.payload
             source[items[1]] = float(items[2])
-            source["updated"] = items[1]
 
-            self.temperature.set(source)
+            self.temperature.set(source, items[1])
             self.temperature.publish()
 
         if items[0] == "analog":
@@ -47,11 +44,9 @@ class MagibuxSensors:
 
             previous = source[key]
             now = float(value[0])
-
             source[key] = now
-            source["updated"] = key
 
-            self.pressure.set(source)
+            self.pressure.set(source, key)
 
             if previous >= now + 0.05 or previous <= now - 0.05:
                 print("pushing new value")
@@ -62,5 +57,12 @@ class MagibuxSensors:
             self.loop()
 
 if __name__ == "__main__":
-    sensors = MagibuxSensors("/dev/ttyACM1")
+    port = "/dev/ttyACM1"
+
+    if len(sys.argv) > 1:
+        port = sys.argv[1]
+
+    print(f"[+] opening serial port: {port}")
+
+    sensors = MagibuxSensors(port)
     sensors.monitor()
