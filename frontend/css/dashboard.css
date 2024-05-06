@@ -12,6 +12,7 @@ body {
 }
 
 /* background fix */
+/*
 #wrapper {
     background: transparent !important;
 }
@@ -19,6 +20,7 @@ body {
 .container-fluid {
     height: 100vh;
 }
+*/
 
 #map {
     width: 100%;
@@ -80,21 +82,3 @@ h2#speed {
     animation: error-blinker 2s infinite;
 }
 
-@media (max-width: 640px) {
-    .row-sensor {
-        text-align: center;
-    }
-
-    .row-sensor .updated {
-        text-align: center;
-    }
-
-    #current-time {
-        margin-top: 0;
-        font-size: 50px;
-    }
-
-    #current-date {
-        font-size: 25px;
-    }
-}
