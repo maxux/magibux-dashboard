@@ -22,6 +22,26 @@ function update_time() {
     $('#current-day').html(now.dayName());
 }
 
+function temperature_colorize(value) {
+    if(value > 35)
+        return "text-bg-danger";
+
+    if(value > 25)
+        return "text-bg-warning";
+
+    if(value > 16)
+        return "text-bg-success";
+
+    if(value > 5)
+        return "text-bg-primary";
+
+    return "text-bg-secondary";
+}
+
+function pressure_colorize(name, value) {
+    return "text-bg-danger";
+}
+
 var socket;
 
 function connect() {
@@ -40,14 +60,20 @@ function connect() {
             case "temperature":
                 var values = json['payload'];
                 for(var index in values) {
-                    $(".temperature-" + index).html(values[index].toFixed(1) + "°C");
+                    $("#temperature-" + index).removeClass();
+                    $("#temperature-" + index).addClass("badge rounded-pill");
+                    $("#temperature-" + index).addClass(temperature_colorize(values[index]));
+                    $("#temperature-" + index).html(values[index].toFixed(1) + "°C");
                 }
             break;
 
             case "pressure":
                 var values = json['payload'];
                 for(var index in values) {
-                    $(".pressure-" + index).html(values[index].toFixed(1) + " bar");
+                    $("#pressure-" + index).removeClass();
+                    $("#pressure-" + index).addClass("badge rounded-pill");
+                    $("#pressure-" + index).addClass(pressure_colorize(index, values[index]));
+                    $("#pressure-" + index).html(values[index].toFixed(1) + " bar");
                 }
             break;
 
@@ -65,6 +91,14 @@ function connect() {
                 $("#country").html(place[3]);
 
                 $("#trip .val").html(location['trip'].toFixed(2));
+
+                if(location['hdop'] > 3) {
+                    $("#location").addClass("card-blink-warning");
+
+                } else {
+                    $("#location").removeClass("card-blink-warning");
+
+                }
 
                 update_map(location['coord']['lat'], location['coord']['lng']);
             break;

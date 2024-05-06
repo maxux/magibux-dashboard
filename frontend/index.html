@@ -33,20 +33,12 @@
 
             <div class="col-md-4">
                 <div class="card mb-2">
-                    <div class="card-body text-center">
+                    <div id="location" class="card-body text-center">
                         <h2 id="speed"><span class="val">0</span> <small class="text-muted">km/h</small></h2>
                         <div id="locality"></div>
                         <div id="country"></div>
 
                         <div id="coord" class="font-monospace text-muted">(locating)</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card mb-2">
-                    <div class="card-body text-center">
-                        No music playing
                     </div>
                 </div>
             </div>
@@ -65,9 +57,88 @@
                 <div class="card mb-2">
                     <div class="card-body">
                         <div class="row">
+                            <div class="col-8">Front brake (tank)</div>
+                            <div class="col-4 text-right">
+                                <span id="pressure-rgn" class="badge rounded-pill text-bg-secondary">...</span>
+                            </div>
+                        </div>
+                       <div class="row">
+                            <div class="col-8">Front brake (level)</div>
+                            <div class="col-4 text-right">
+                                <span id="pressure-rge" class="badge rounded-pill text-bg-secondary">...</span>
+                            </div>
+                        </div>
+                       <div class="row">
+                            <div class="col-8">Rear brake (tank)</div>
+                            <div class="col-4 text-right">
+                                <span id="pressure-rw" class="badge rounded-pill text-bg-secondary">...</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">Rear brake (level)</div>
+                            <div class="col-4 text-right">
+                                <span id="pressure-gn" class="badge rounded-pill text-bg-secondary">...</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">Park brake (tank)</div>
+                            <div class="col-4 text-right">
+                                <span id="pressure-ge" class="badge rounded-pill text-bg-secondary">...</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">Park brake (level)</div>
+                            <div class="col-4 text-right">
+                                <span id="pressure-w" class="badge rounded-pill text-bg-secondary">...</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">Stop Points</div>
+                            <div class="col-4 text-right">
+                                <span id="pressure-br" class="badge rounded-pill text-bg-secondary">...</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">Utilities (tank)</div>
+                            <div class="col-4 text-right">
+                                <span id="pressure-rgs" class="badge rounded-pill text-bg-secondary">...</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">Suspensions and doors</div>
+                            <div class="col-4 text-right">
+                                <span id="pressure-gs" class="badge rounded-pill text-bg-secondary">...</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">Emergency (tank)</div>
+                            <div class="col-4 text-right">
+                                <span id="pressure-rb" class="badge rounded-pill text-bg-secondary">...</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">Emergency (level)</div>
+                            <div class="col-4 text-right">
+                                <span id="pressure-b" class="badge rounded-pill text-bg-secondary">...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card mb-2">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-7">Battery Level</div>
+                            <div class="col-5">
+                                <span class="badge rounded-pill text-bg-secondary">0v</span>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col-7">Power Switch</div>
                             <div class="col-5">
-                                <span class="badge rounded-pill text-bg-danger">Switched Off</span>
+                                <span class="badge rounded-pill text-bg-danger">Powered Off</span>
                             </div>
                         </div>
                         <div class="row">
@@ -77,46 +148,28 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card mb-2">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-8">Front Brake</div>
-                            <div class="col-4 text-right">
-                                <span class="pressure-channel-1 badge rounded-pill text-bg-danger">...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card mb-2">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-8">Front left-door</div>
-                            <div class="col-4">
+                            <div class="col-7">Front left-door</div>
+                            <div class="col-5">
                                 <span class="door-1 badge rounded-pill text-bg-warning">Open</span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-8">Front right-door</div>
-                            <div class="col-4">
+                            <div class="col-7">Front right-door</div>
+                            <div class="col-5">
                                 <span class="door-2 badge rounded-pill text-bg-warning">Open</span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-8">Middle doors</div>
-                            <div class="col-4">
+                            <div class="col-7">Middle doors</div>
+                            <div class="col-5">
                                 <span class="door-3 badge rounded-pill text-bg-danger">Open</span>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-8">Rear doors</div>
-                            <div class="col-4">
+                            <div class="col-7">Rear doors</div>
+                            <div class="col-5">
                                 <span class="door-4 badge rounded-pill text-bg-success">Closed</span>
                             </div>
                         </div>
@@ -130,31 +183,31 @@
                         <div class="row">
                             <div class="col-8">Driver (front)</div>
                             <div class="col-4 text-right">
-                                <span class="temperature-28-ff641e93a11cb3 badge rounded-pill text-bg-primary">0°C</span>
+                                <span id="temperature-28-ff641e93a11cb3" class="badge rounded-pill text-bg-primary">0°C</span>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-8">Passengers (front)</div>
                             <div class="col-4 text-right">
-                                <span class="temperature-28-ff641f43f47d96 badge rounded-pill text-bg-primary">0°C</span>
+                                <span id="temperature-28-ff641f43f47d96" class="badge rounded-pill text-bg-primary">0°C</span>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-8">Outside (front)</div>
                             <div class="col-4 text-right">
-                                <span class="temperature-28-ff641e93d759d6 badge rounded-pill text-bg-primary">0°C</span>
+                                <span id="temperature-28-ff641e93d759d6" class="badge rounded-pill text-bg-primary">0°C</span>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-8">Hardware (rack)</div>
                             <div class="col-4 text-right">
-                                <span class="temperature-28-ff641e93b9a587 badge rounded-pill text-bg-primary">0°C</span>
+                                <span id="temperature-28-ff641e93b9a587" class="badge rounded-pill text-bg-primary">0°C</span>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-8">Panel (front)</div>
                             <div class="col-2 text-right">
-                                <span class="temperature-28-ff641f43f86666 badge rounded-pill text-bg-primary">0°C</span>
+                                <span id="temperature-28-ff641f43f86666" class="badge rounded-pill text-bg-primary">0°C</span>
                             </div>
                         </div>
                     </div>

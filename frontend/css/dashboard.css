@@ -28,7 +28,7 @@ body {
 }
 
 .card {
-    background: rgba(50, 50, 50, 0.6) !important;
+    background: rgba(50, 50, 50, 0.6);
 }
 
 #current-time {
@@ -73,12 +73,19 @@ h2#speed {
     animation: blinker 1s linear infinite;
 }
 
-@keyframes error-blinker {
-    50% { background-color: #222222; }
+@keyframes module-blinker {
+    50% { background-color: rgba(50, 50, 50, 0.6); }
 }
 
-.system-error {
-    background-color: #792525;
-    animation: error-blinker 2s infinite;
+.card-blink-error {
+    background-color: rgba(220, 53, 69, 0.8);
+    border-radius: var(--bs-border-radius);
+    animation: module-blinker 1.4s infinite;
+}
+
+.card-blink-warning {
+    background-color: rgba(255, 175, 0, 0.3);
+    border-radius: var(--bs-border-radius);
+    animation: module-blinker 1.4s infinite;
 }
 
