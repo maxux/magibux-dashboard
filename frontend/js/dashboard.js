@@ -89,10 +89,11 @@ function connect() {
             case "pressure":
                 var values = json['payload'];
                 for(var index in values) {
-                    $("#pressure-" + index).removeClass();
-                    $("#pressure-" + index).addClass("badge rounded-pill");
-                    $("#pressure-" + index).addClass(pressure_colorize(index, values[index]));
-                    $("#pressure-" + index).html(values[index].toFixed(1) + " bar");
+                    var name = index.toLowerCase();
+                    $("#pressure-" + name).removeClass();
+                    $("#pressure-" + name).addClass("badge rounded-pill");
+                    $("#pressure-" + name).addClass(pressure_colorize(index, values[index]));
+                    $("#pressure-" + name).html(values[index].toFixed(1) + " bar");
                 }
             break;
 
