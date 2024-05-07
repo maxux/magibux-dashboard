@@ -4,6 +4,7 @@ import dashboard
 import redis
 import json
 import math
+import sys
 
 class MagibuxLocator:
     def __init__(self, port):
@@ -90,5 +91,12 @@ class MagibuxLocator:
             self.loop()
 
 if __name__ == "__main__":
-    locator = MagibuxLocator("/dev/ttyACM0")
+    port = "/dev/ttyACM0"
+
+    if len(sys.argv) > 1:
+        port = sys.argv[1]
+
+    print(f"[+] opening serial port: {port}")
+
+    locator = MagibuxLocator(port)
     locator.monitor()
