@@ -64,6 +64,10 @@ class MagibuxLocator:
             return
 
         coord = parsed['coord']
+
+        if not coord['lat'] or not coord['lng']:
+            return
+
         parsed['place'] = self.place(coord['lat'], coord['lng'])
 
         if not self.previous:
