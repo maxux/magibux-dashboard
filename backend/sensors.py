@@ -71,7 +71,7 @@ class MagibuxSensors:
             self.loop()
 
 if __name__ == "__main__":
-    port = "/dev/ttyACM1"
+    port = "/dev/serial/by-id/usb-Arduino__www.arduino.cc__0043_950353138353517052E1-if00"
 
     if len(sys.argv) > 1:
         port = sys.argv[1]
