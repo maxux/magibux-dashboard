@@ -95,7 +95,7 @@ class MagibuxLocator:
             self.loop()
 
 if __name__ == "__main__":
-    port = "/dev/ttyACM0"
+    port = "/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00"
 
     if len(sys.argv) > 1:
         port = sys.argv[1]
