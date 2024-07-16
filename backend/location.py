@@ -88,6 +88,8 @@ class MagibuxLocator:
         self.slave.set(parsed)
         self.slave.publish()
 
+        # FIXME: add persistance
+
         self.previous = coord
 
     def monitor(self):
