@@ -93,7 +93,7 @@ class GPSRawData:
         track = float(fields[1]) if fields[1] else None
         speed = float(fields[7]) if fields[7] else None
 
-        if speed > 260:
+        if speed and speed > 260:
             speed = 0
 
         data = {
