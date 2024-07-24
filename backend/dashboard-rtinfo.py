@@ -65,16 +65,14 @@ class DashboardServer():
         print("[+] websocket: client connected")
 
         try:
-            for id in self.backlogs:
-                item = self.backlogs[id]
-                print("[+] sending backlog: %s (%s)" % (id, item['id']))
-                await self.wspayload(websocket, item['id'], item['payload'])
-
             while True:
                 if not websocket.open:
                     break
 
                 await asyncio.sleep(1)
+
+        except Exception as e:
+            prnint(e)
 
         finally:
             print("[+] websocket: client disconnected")
