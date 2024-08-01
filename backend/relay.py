@@ -13,7 +13,9 @@ class MagibuxRelay:
         self.ctrlsub = self.control.pubsub()
         self.ctrlsub.subscribe(['relaying'])
 
-        self.relay = dashboard.DashboardSlave("relay")
+        self.slave = dashboard.DashboardSlave("relay")
+        self.channels = 8
+        self.state = [None] * self.channels
 
     def serial_loop(self):
         line = self.board.readline()
@@ -25,7 +27,19 @@ class MagibuxRelay:
         # print(items)
 
         if items[0].startswith("state"):
-            print(items)
+            state = items[1].split(" ")
+            changed = False
+
+            for idx, value in enumerate(state):
+                if self.state[idx] != int(value):
+                    self.state[idx] = int(value)
+                    changed = True
+
+            if changed:
+                print(f"[+] new state: {self.state}")
+
+                self.slave.set(self.state)
+                self.slave.publish()
 
     def control_loop(self):
         message = self.ctrlsub.get_message()
