@@ -1,6 +1,7 @@
 import serial
 import dashboard
 import json
+import time
 import redis
 import sys
 
@@ -16,6 +17,7 @@ class MagibuxRelay:
         self.slave = dashboard.DashboardSlave("relay")
         self.channels = 8
         self.state = [None] * self.channels
+        self.uptime = [None] * self.channels
 
     def serial_loop(self):
         line = self.board.readline()
@@ -28,18 +30,24 @@ class MagibuxRelay:
 
         if items[0].startswith("state"):
             state = items[1].split(" ")
+
+            merged = [(None, None)] * self.channels
             changed = False
 
-            # maybe directly compare if arrays are equals
             for idx, value in enumerate(state):
                 if self.state[idx] != int(value):
                     self.state[idx] = int(value)
+                    self.uptime[idx] = int(time.time())
+
                     changed = True
 
-            if changed:
-                print(f"[+] new state: {self.state}")
+                # create a merged view of state and uptime
+                merged[idx] = (int(value), self.uptime[idx])
 
-                self.slave.set(self.state)
+            if changed:
+                print(f"[+] new state: {merged}")
+
+                self.slave.set(merged)
                 self.slave.publish()
 
     def control_loop(self):
