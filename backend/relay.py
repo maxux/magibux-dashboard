@@ -30,6 +30,7 @@ class MagibuxRelay:
             state = items[1].split(" ")
             changed = False
 
+            # maybe directly compare if arrays are equals
             for idx, value in enumerate(state):
                 if self.state[idx] != int(value):
                     self.state[idx] = int(value)
@@ -49,7 +50,13 @@ class MagibuxRelay:
         if message['type'] != 'message':
             return
 
-        payload = json.loads(message['data'])
+        try:
+            payload = json.loads(message['data'])
+
+        except Exception as e:
+            print(e)
+            return
+
         channel = payload['id']
         print(payload)
 
