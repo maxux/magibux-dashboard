@@ -74,7 +74,7 @@ class MagibuxRelay:
             self.serial_loop()
 
 if __name__ == "__main__":
-    port = "/dev/serial/by-id/usb-Arduino__www.arduino.cc__0043_8533231303635131CC45-if00"
+    port = "/dev/serial/by-id/usb-Arduino__www.arduino.cc__0043_3433031353135161E1D0-if00"
 
     if len(sys.argv) > 1:
         port = sys.argv[1]
