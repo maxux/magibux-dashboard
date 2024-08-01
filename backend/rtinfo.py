@@ -1,7 +1,6 @@
 import requests
-import importlib
+import dashboard
 
-dashboard = importlib.import_module("dashboard-rtinfo")
 slave = dashboard.DashboardSlave("rtinfo")
 
 while True:
