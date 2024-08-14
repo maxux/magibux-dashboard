@@ -2,28 +2,100 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<title>Cluster Monitoring (rtinfo)</title>
-	<link href="css/bootstrap.dark.min.css" rel="stylesheet">
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
-	<link href="css/dashboard-system.css" rel="stylesheet">
+	<title>Magibux Central Monitoring</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+	<link href="css/dashboard-magibux.css" rel="stylesheet">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#091d36">
 </head>
 
 <body>
     <div id="wrapper">
 	<div class="container-fluid">
-        <div class="row">
+        <div class="row small-hide">
             <div class="col-lg-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <span class="glyphicon glyphicon-cloud glyphicon-text"></span>
-                            Realtime System Monitoring (rtinfo)
-                        </h3>
+                <div class="card text-bg-dark mb-2">
+                    <div class="card-header text-bg-dark">
+                        Realtime Nodes Status
                     </div>
-                    <div class="panel-body rtinfo">
+                    <div class="card-body rtinfo text-light">
                         <div id="content">
                             <!-- rtinfo table -->
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Pressure
+                    </div>
+                    <div class="card-body">
+                        <div id="pressure" class="container m-0 p-0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Relays Channels
+                    </div>
+                    <div class="card-body">
+                        <div id="relays" class="container m-0 p-0">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Temperature
+                    </div>
+                    <div class="card-body">
+                        <div id="temperature" class="container m-0 p-0">
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-9">
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Live Camera
+                    </div>
+                    <div class="card-body cameras">
+                        <div id="camera-wide" class="text-center">
+                        </div>
+
+                        <div id="camera-regular" class="text-center">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-header">
+                        Live Location
+                    </div>
+                    <div class="card-body" class="container m-0 p-0">
+                        <h3><span id="speed"></span> km/h</h3>
+                        <h5><span id="trip"></span> m</h5>
+                        <div id="coord"></div>
+                        <div id="locality"></div>
                     </div>
                 </div>
             </div>
@@ -34,7 +106,12 @@
     </div>
 
     <script src="js/jquery-3.6.4.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-	<script src="js/dashboard-system.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8" crossorigin="anonymous"></script>
+
+    <!--
+    <script src="js/jquery.flot.js"></script>
+    <script src="js/jquery.flot.time.js"></script>
+    -->
+	<script src="js/dashboard-magibux.js"></script>
 </body>
 </html>

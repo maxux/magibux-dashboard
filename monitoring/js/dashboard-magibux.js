@@ -92,7 +92,7 @@ function autosize(value) {
 		unitidx = 3;
 	}
 
-	return temp.toFixed(2) + ' ' + units[unitidx];
+	return temp.toFixed(0) + ' ' + units[unitidx];
 }
 
 //
@@ -151,7 +151,8 @@ function rate(value) {
 	for(; value > 1024; value /= 1024)
 		uindex++;
 
-	return value.toFixed(2) + ' ' + rates[uindex];
+	// return value.toFixed(2).padStart(4,'&nbsp;') + ' ' + rates[uindex];
+	return value.toFixed(0) + ' ' + rates[uindex];
 }
 
 function shortrate(value) {
@@ -175,7 +176,7 @@ function colorintf(value, maxspeed) {
 	// computing percentage of usage
 	var pc = (value / maxspeed) * 100;
 
-	if(value < 5)
+	if(value < 0.5)
 		return {'class': ''};
 
 	if(value < 40)
@@ -201,13 +202,6 @@ function colordisk(value) {
 		return {'class': 'text-warning'};
 
 	return {'class': 'text-danger'};
-}
-
-function colorbattery(battery) {
-    if(battery.load == -1)
-        return {'class': 'text-muted'};
-
-    return {'class': ''};
 }
 
 function colorcputemp(text, value) {
@@ -254,14 +248,17 @@ function uptime(value) {
 	if(parseInt(days) == 1)
 		return Math.floor(days) + ' day';
 
-	return Math.floor(value / 3600) + ' hours';
+    if(parseInt(value) > 3600)
+	    return Math.floor(value / 3600) + ' hours';
+
+	return Math.floor(value / 60) + ' min';
 }
 
 function uptime_color(value) {
-	if(value < 86400)
+	if(value < 3600)
 		return {'class': 'text-danger'};
 
-	if(value < (86400 * 2))
+	if(value < 86400)
 		return {'class': 'text-warning'};
 
 	return {'class': 'text-success'};
@@ -283,25 +280,6 @@ function degree(value, limit) {
 //
 function percent(value, extra) {
 	return value + ' %' + ((extra) ? ' (' + extra + ')' : '');
-}
-
-//
-// parsing battery rtinfo object
-//
-function battery(battery) {
-	var bat = '';
-
-	if(battery.load == -1)
-		return '<small>[AC]</small>';
-
-	if(batpic[battery.status] != undefined)
-		bat = batpic[battery.status] + ' ';
-
-    var pc = battery.load;
-    if(battery.load < 0 || battery.load > 100)
-        pc = 100;
-
-	return bat + percent(pc);
 }
 
 //
@@ -354,8 +332,6 @@ function summary_node(node, server) {
     tr.append($('<td>', colorize(node.cpu_usage[0]))
         .html($('<span>', {'class': 'wfix'}).html(percent(node.cpu_usage[0]))));
 
-    tr.append($('<td>').html(cpunr));
-
     var size = autosize(node.memory.ram_used);
     tr.append($('<td>', colorize(ram)).html(percent(ram, size)));
 
@@ -374,11 +350,7 @@ function summary_node(node, server) {
     var up = uptime(node.uptime);
     tr.append($('<td>', uptime_color(node.uptime)).html(up));
 
-    var bat = battery(node.battery);
-    tr.append($('<td>', colorbattery(node.battery)).html(bat));
-
     tr.append($('<td>').html(colorcputemp(degree(node.sensors.cpu.average), node.sensors.cpu.average)));
-    tr.append($('<td>').html(colorhddtemp(degree(node.sensors.hdd.average), node.sensors.hdd.average)));
 
     // disk usage
     var speed = 0
@@ -392,14 +364,14 @@ function summary_node(node, server) {
     for(var idx in node.network)
         speed += node.network[idx].rx_rate;
 
-    tr.append($('<td>', colorintf(speed, 1000)).html(rate(speed)));
+    tr.append($('<td>', colorintf(speed, 10)).html(rate(speed)));
 
     // network usage (tx)
     var speed = 0
     for(var idx in node.network)
         speed += node.network[idx].tx_rate;
 
-    tr.append($('<td>', colorintf(speed, 1000)).html(rate(speed)));
+    tr.append($('<td>', colorintf(speed, 10)).html(rate(speed)));
 
     return tr;
 }
@@ -412,31 +384,40 @@ function summary(host, server, nodes) {
     $('#summary-' + host).empty();
     $('#summary-' + host).css('display', '');
 
+    /*
     var thead = $('<thead>')
         .append($('<td>', {'class': 'td-8'}).html('Hostname'))
-        .append($('<td>', {'class': 'td-3'}).html('CPU'))
-        .append($('<td>', {'class': 'td-2'}).html('#'))
-        .append($('<td>', {'class': 'td-10'}).html('RAM'))
+        .append($('<td>', {'class': 'td-4'}).html('CPU'))
+        .append($('<td>', {'class': 'td-14'}).html('RAM'))
         .append($('<td>', {'class': 'td-10'}).html('SWAP'))
         .append($('<td>', {'colspan': 3, 'class': 'td-10'}).html('Load Average'))
-        .append($('<td>', {'class': 'td-8'}).html('Remote IP'))
+        .append($('<td>', {'class': 'td-10'}).html('Remote IP'))
         .append($('<td>', {'class': 'td-5'}).html('Time'))
         .append($('<td>', {'class': 'td-5'}).html('Uptime'))
-        .append($('<td>', {'class': 'td-5'}).html('Battery'))
-        .append($('<td>', {'class': 'td-4'}).html('CPU'))
-        .append($('<td>', {'class': 'td-4'}).html('Disk'))
+        .append($('<td>', {'class': 'td-5'}).html('CPU'))
         .append($('<td>', {'class': 'td-8'}).html('Disks I/O'))
         .append($('<td>', {'class': 'td-8'}).html('Net RX'))
         .append($('<td>', {'class': 'td-8'}).html('Net TX'));
+    */
+
+    var thead = $('<thead>')
+        .append($('<td>', {'class': ''}).html('Hostname'))
+        .append($('<td>', {'class': ''}).html('CPU'))
+        .append($('<td>', {'class': ''}).html('RAM'))
+        .append($('<td>', {'class': ''}).html('SWAP'))
+        .append($('<td>', {'colspan': 3, 'class': ''}).html('Load Average'))
+        .append($('<td>', {'class': ''}).html('Remote IP'))
+        .append($('<td>', {'class': ''}).html('Time'))
+        .append($('<td>', {'class': ''}).html('Uptime'))
+        .append($('<td>', {'class': ''}).html('CPU'))
+        .append($('<td>', {'class': 'col-fixed'}).html('Disks I/O'))
+        .append($('<td>', {'class': 'col-fixed'}).html('Network RX'))
+        .append($('<td>', {'class': 'col-fixed'}).html('Network TX'));
 
     $('#summary-' + host).append(thead);
     $('#summary-' + host).append($('<tbody>'));
 
     for(var n in nodes) {
-        if(nodes[n].hostname == "prod-01") {
-            $('#summary-' + host + ' tbody').append($('<tr>', {'class': 'spacer'}));
-        }
-
         $('#summary-' + host + ' tbody').append(summary_node(nodes[n], server));
     }
 }
@@ -450,7 +431,7 @@ function arraymove(arr, fi, di) {
 //
 // parsing new json tree and call required display process
 //
-function parsing(response, host) {
+function rtinfo_parsing(response, host) {
     // console.log(response);
     var json = response;
 
@@ -458,9 +439,9 @@ function parsing(response, host) {
 	$('body').attr('class', 'connected');
 
     // ensure table exists
-    if(!$('#root-' + host).length) {
+    if($('#root-' + host).length == 0) {
         var root = $('<div>', {'id': 'root-' + host});
-        root.append($('<table>', {'class': "table table-hover table-condensed", 'id': "summary-" + host}));
+        root.append($('<table>', {'class': "table table-dark table-sm table-borderless font-monospace", 'id': "summary-" + host}));
 
         $('#content').append(root);
     }
@@ -476,12 +457,6 @@ function parsing(response, host) {
 
 	hosts = hosts.sort();
 
-    // push 'prod-01' on last line
-	for(var n in hosts) {
-        if(hosts[n] == "prod-01")
-            arraymove(hosts, n, hosts.length - 1);
-    }
-
 	for(var n in hosts)
 		for(var x in json.rtinfo)
 			if(json.rtinfo[x].hostname == hosts[n])
@@ -495,10 +470,220 @@ function parsing(response, host) {
 	summary(host, json, nodes);
 }
 
+function camera_update(caminfo) {
+    for(var id in caminfo) {
+        let camdata = caminfo[id];
+        // console.log(camdata);
+
+        let modifier = "timestamp=" + new Date().getTime();
+        let location = "http://thumbnail.magibux.maxux.net/small-" + camdata['name'] + ".jpg?" + modifier;
+
+        if($("#camera-" + camdata['id']).length) {
+            // refresh tag
+            var image = $("#camera-" + camdata['id']);
+            image.attr("src", location);
+
+        } else {
+            // create new tag
+            var target = "#camera-wide";
+
+            if((camdata['image_width'] / camdata['image_height']) < 1.5)
+                target = "#camera-regular";
+
+            var image = $('<img>', {'id': 'camera-' + camdata['id'], 'class': 'rounded'});
+            image.attr("src", location);
+
+            $(target).append(image);
+        }
+    }
+}
+
+function plurial(amount, word) {
+    if(amount.toFixed(0) < 2)
+        return word;
+
+    return word + "s";
+}
+
+function elapsed_time(source) {
+    let now = new Date().getTime() / 1000;
+    let uptime = Math.abs(source - now);
+
+    if(uptime < 2)
+        return [uptime, "right now"];
+
+    if(uptime < 60)
+        return [uptime, uptime.toFixed(0) + plurial(uptime, " second")];
+
+    if(uptime < 3600) {
+        let minutes = uptime / 60;
+        return [uptime, minutes.toFixed(0) + plurial(minutes, " minute")];
+    }
+
+    if(uptime < 86400) {
+        let hours = uptime / 3600;
+        return [uptime, hours.toFixed(0) + plurial(hours, " hour")];
+    }
+
+    let days = uptime / 86400;
+    return [uptime, days.toFixed(0) + plurial(days, " day")];
+}
+
+function temperature_update(sensors) {
+    for(var id in sensors) {
+        let sensor = sensors[id];
+        let value = sensor["value"].toFixed(2) + "°C";
+        let uptime = elapsed_time(sensor["changed"]);
+
+        if($("#temperature-" + id).length == 0) {
+            var root = $("<div>", {"id": "temperature-" + id, "class": "row"});
+
+            var namediv = $("<div>", {"class": "col-6"});
+            namediv.append($("<div>", {"class": "name"}).html(id));
+
+            var valdiv = $("<div>", {"class": "col-2"});
+            valdiv.append($("<span>", {"class": "value badge rounded-pill bg-info text-dark"}).html(value));
+
+            var updiv = $("<div>", {"class": "col-4 text-end font-monospace"});
+            updiv.append($("<span>", {"class": "uptime badge rounded-pill bg-dark"}).html(uptime[1]));
+
+            root.append(namediv).append(valdiv).append(updiv);
+            $("#temperature").append(root);
+        }
+
+        // update value with correct colorartion
+        $("#temperature-" + id + " .value").html(value);
+        $("#temperature-" + id + " .uptime").html(uptime[1]);
+    }
+}
+
+function pressure_update(sensors) {
+    for(var id in sensors) {
+        let sensor = sensors[id];
+        let value = sensor['value'].toFixed(2) + " bar";
+        let uptime = elapsed_time(sensor["time"]);
+
+        if($("#pressure-" + id).length == 0) {
+            var root = $("<div>", {"id": "pressure-" + id, "class": "row"});
+
+            var namediv = $("<div>", {"class": "col-5"});
+            namediv.append($("<div>", {"class": "name"}).html("Channel " + (parseInt(id) + 1)));
+
+            var valdiv = $("<div>", {"class": "col-3"});
+            valdiv.append($("<span>", {"class": "value badge rounded-pill bg-info text-dark"}).html(value));
+
+            var updiv = $("<div>", {"class": "col-4 text-end font-monospace"});
+            updiv.append($("<span>", {"class": "uptime badge rounded-pill bg-dark"}).html(uptime[1]));
+
+            root.append(namediv).append(valdiv).append(updiv);
+            $("#pressure").append(root);
+        }
+
+        // update value with correct colorartion
+        let color = (sensor['value'] > 1.4 ? "bg-success text-light" : "bg-secondary text-dark");
+        $("#pressure-" + id + " .value").removeClass("bg-success bg-dark bg-info bg-secondary text-dark text-light").addClass(color).html(value);
+        $("#pressure-" + id + " .uptime").html(uptime[1]);
+    }
+}
+
+function location_update(location) {
+    let lat = location['coord']['lat'].toFixed(6);
+    let lng = location['coord']['lng'].toFixed(6);
+    let place = location['place'];
+
+    $("#coord").html(lat + ", " + lng);
+    $("#locality").html(place[0] + ", " + place[1]);
+    $("#speed").html(location['speed'].toFixed(2));
+
+    $("#trip").html(location['trip'].toFixed(2));
+}
+
+function relays_update(state) {
+    let names = [
+        "Light - Main Service",
+        "Light - Front Pannel",
+        "Light - LED Bar (left)",
+        "Light - LED Bar (right)",
+        "Drink - Main Fridge",
+        "Cameras - Primary",
+        "Cameras - Secondary",
+        "Light - Infrared",
+    ];
+
+    for(var channel in state) {
+        let value = state[channel][0] ? "Online" : "Offline";
+        let name = names[channel];
+        let uptime = elapsed_time(state[channel][1]);
+
+        if($("#relay-channel-" + channel).length == 0) {
+            var root = $("<div>", {"id": "relay-channel-" + channel, "class": "row"});
+            var nametag = $("<div>", {"class": "col-6 name"}).html(name);
+
+            var sensortag = $("<div>", {"class": "col-2"});
+            sensortag.append($("<span>", {"class": "value badge rounded-pill"}).html(value));
+
+            var uptimetag = $("<div>", {"class": "col-4 text-end font-monospace"});
+            uptimetag.append($("<span>", {"class": "uptime badge rounded-pill bg-dark"}).html(uptime[1]));
+
+            root.append(nametag).append(sensortag).append(uptimetag);
+            $("#relays").append(root);
+        }
+
+        // only update value
+        let color = (state[channel][0] ? "bg-success" : "bg-dark");
+        $("#relay-channel-" + channel + " .value").removeClass("bg-success bg-dark").addClass(color).html(value);
+        $("#relay-channel-" + channel + " .uptime").html(uptime[1]);
+    }
+}
+
 var socket;
+var caminfo;
+var backlog = {
+    "relay": [],
+    "temperature": [],
+};
+
+function recurring() {
+    update_relays_time();
+    update_temperature_time();
+    update_pressure_time();
+}
+
+function update_relays_time() {
+    for(var channel in backlog['relay']) {
+        let relay = backlog['relay'][channel];
+
+        let uptime = elapsed_time(relay[1]);
+        $("#relay-channel-" + channel + " .uptime").html(uptime[1]);
+    }
+}
+
+function update_temperature_time() {
+    for(var id in backlog['temperature']) {
+        var sensor = backlog['temperature'][id];
+
+        let uptime = elapsed_time(sensor["changed"]);
+        var tag = $("#temperature-" + id + " .uptime");
+
+        tag.html(uptime[1]);
+        tag.removeClass("text-danger");
+
+        if(uptime[0] > 60)
+            tag.addClass("text-danger");
+    }
+}
+
+function update_pressure_time() {
+    for(var id in backlog['pressure']) {
+        let sensor = backlog['pressure'][id];
+
+        let uptime = elapsed_time(sensor['time']);
+        $("#pressure-" + id + " .uptime").html(uptime[1]);
+    }
+}
 
 function connect() {
-    socket = new WebSocket("ws://" + window.location.hostname + ":30510/");
+    socket = new WebSocket("ws://monitoring.magibux.maxux.net:30900/");
 
     socket.onopen = function() {
         console.log("websocket open");
@@ -507,22 +692,36 @@ function connect() {
 
     socket.onmessage = function(msg) {
         json = JSON.parse(msg.data);
+
+        backlog[json['type']] = json['payload'];
         // console.log(json);
 
         switch(json['type']) {
-            case "weather":
-            case "sensors":
-            case "sensors-backlog":
-            case "power":
-            case "power-backlog":
-            case "power-backlog-days":
-            case "gpio-status":
-            case "sensors-dht":
-                // ignore all of this
+            case "cameras":
+                return camera_update(json['payload']);
             break;
 
             case "rtinfo":
-                parsing(json['payload'], 'magibux');
+                return rtinfo_parsing(json['payload'], 'magibux');
+            break;
+
+            case "location":
+                return location_update(json['payload']);
+            break;
+
+            case "temperature":
+                // console.log(json);
+                return temperature_update(json['payload']);
+            break;
+
+            case "pressure":
+                // console.log(json);
+                return pressure_update(json['payload']);
+            break;
+
+
+            case "relay":
+                return relays_update(json['payload']);
             break;
 
             default:
@@ -537,7 +736,14 @@ function connect() {
     }
 }
 
+function fresh_reload() {
+    window.location.reload();
+}
 
 $(document).ready(function() {
+    setInterval(recurring, 1000);
+    setTimeout(fresh_reload, 3600000);
+
     connect();
 });
+

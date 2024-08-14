@@ -1,0 +1,111 @@
+html {
+    background-image: url(../resources/wallpaper/default.jpg);
+    background-size: cover;
+}
+
+html, body {
+    height: 100%;
+}
+
+@media screen and (max-width: 1300px) {
+    body {
+        font-size: 70%;
+    }
+
+    h3 {
+        font-size: 140%;
+        font-weight: bold;
+    }
+
+    #camera-wide img, #camera-regular img {
+        width: 150px !important;
+        margin: 0.3em !important;
+    }
+
+    .small-hide {
+        display: none;
+    }
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    padding: 15px;
+    background-color: #333030;
+    background: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* background fix */
+#wrapper {
+    background: transparent !important;
+}
+
+.node-down {
+    opacity: 0.3;
+}
+
+.rtinfo table a:link, table a:hover, table a:visited {
+    text-decoration: none !important;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+:root {
+    --bs-bg-opacity: 0.4;
+}
+
+.table-dark {
+    --bs-table-bg: transparent;
+}
+
+.col-fixed {
+    width: 160px;
+}
+
+@keyframes redshadow {
+    from { text-shadow: 0px 0px 15px #F4A0A0; }
+    to { text-shadow : none; }
+}
+
+.rtinfo .text-danger {
+    animation: none !important;
+}
+
+table.devices .offline {
+    opacity: 0.5;
+}
+
+.darker {
+    opacity: 0.3;
+}
+
+@keyframes blinker {
+    50% { opacity: 0; }
+}
+
+#disconnected {
+    position: absolute;
+    bottom: 5px;
+    right: 15px;
+    color: #A52A2A;
+    font-weight: bold;
+    animation: blinker 1s linear infinite;
+}
+
+@keyframes error-blinker {
+    50% { background-color: #222222; }
+}
+
+.system-error {
+    background-color: #792525;
+    animation: error-blinker 2s infinite;
+}
+
+#camera-wide img, #camera-regular img {
+    width: 280px;
+    margin: 0.3em;
+}
