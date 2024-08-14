@@ -285,7 +285,14 @@ function percent(value, extra) {
 //
 // build a 'summary' table node line
 //
-function summary_node(node, server) {
+function sc(x) { // strip class hotfix
+    return x["class"];
+}
+
+function summary_node(id, node, server) {
+    let header = $("#rtinfo-node-" + id + " .card-header");
+    let body = $("#rtinfo-node-" + id + " .card-body");
+
     var status = {'class': ''};
 
     if(node.lasttime + 30 < server.servertime)
@@ -306,15 +313,21 @@ function summary_node(node, server) {
     if(node.lasttime + 30 < server.servertime)
         status = 'text-danger';
 
-    var hostname = $('<a>', {
-        'data-toggle': "tooltip",
-        'data-placement': "top",
-        'title': new Date(node.lasttime * 1000),
-        'href': '#',
-        'class': status,
+    header.html(node.hostname);
+    header.removeClass("text-danger text-warning text-success").addClass(status);
 
-    }).tooltip().html(node.hostname);
+    body.empty();
 
+    let cpu = node.cpu_usage[0];
+    body.append($("<span>", {"class": "badge rounded-pill bg-dark mx-1 " + sc(colorize(cpu))}).html("CPU " + cpu + " %"));
+
+    let ram = percentvalue(node.memory.ram_used, node.memory.ram_total);
+    body.append($("<span>", {"class": "badge rounded-pill bg-dark mx-1 " + sc(colorize(ram))}).html("RAM " + ram + " %"));
+
+    let up = uptime(node.uptime);
+    body.append($('<span>', {"class": "badge rounded-pill bg-dark mx-1 " + sc(uptime_color(node.uptime))}).html(up));
+
+    /*
     tr.append($('<td>', {'class': status}).append(hostname));
 
     var swap = 0;
@@ -374,6 +387,7 @@ function summary_node(node, server) {
     tr.append($('<td>', colorintf(speed, 10)).html(rate(speed)));
 
     return tr;
+    */
 }
 
 
@@ -381,44 +395,17 @@ function summary_node(node, server) {
 // build summary table
 //
 function summary(host, server, nodes) {
-    $('#summary-' + host).empty();
-    $('#summary-' + host).css('display', '');
+    for(var id in nodes) {
+        if($("#rtinfo-node-" + id).length == 0) {
+            let card = $("<div>", {"id": "rtinfo-node-" + id, "class": "card text-bg-dark"});
+            let head = $("<div>", {"class": "card-header"}).html("Node " + id);
+            let body = $("<div>", {"class": "card-body"});
 
-    /*
-    var thead = $('<thead>')
-        .append($('<td>', {'class': 'td-8'}).html('Hostname'))
-        .append($('<td>', {'class': 'td-4'}).html('CPU'))
-        .append($('<td>', {'class': 'td-14'}).html('RAM'))
-        .append($('<td>', {'class': 'td-10'}).html('SWAP'))
-        .append($('<td>', {'colspan': 3, 'class': 'td-10'}).html('Load Average'))
-        .append($('<td>', {'class': 'td-10'}).html('Remote IP'))
-        .append($('<td>', {'class': 'td-5'}).html('Time'))
-        .append($('<td>', {'class': 'td-5'}).html('Uptime'))
-        .append($('<td>', {'class': 'td-5'}).html('CPU'))
-        .append($('<td>', {'class': 'td-8'}).html('Disks I/O'))
-        .append($('<td>', {'class': 'td-8'}).html('Net RX'))
-        .append($('<td>', {'class': 'td-8'}).html('Net TX'));
-    */
+            card.append(head).append(body);
+            $("#rtinfo-content").append(card);
+        }
 
-    var thead = $('<thead>')
-        .append($('<td>', {'class': ''}).html('Hostname'))
-        .append($('<td>', {'class': ''}).html('CPU'))
-        .append($('<td>', {'class': ''}).html('RAM'))
-        .append($('<td>', {'class': ''}).html('SWAP'))
-        .append($('<td>', {'colspan': 3, 'class': ''}).html('Load Average'))
-        .append($('<td>', {'class': ''}).html('Remote IP'))
-        .append($('<td>', {'class': ''}).html('Time'))
-        .append($('<td>', {'class': ''}).html('Uptime'))
-        .append($('<td>', {'class': ''}).html('CPU'))
-        .append($('<td>', {'class': 'col-fixed'}).html('Disks I/O'))
-        .append($('<td>', {'class': 'col-fixed'}).html('Network RX'))
-        .append($('<td>', {'class': 'col-fixed'}).html('Network TX'));
-
-    $('#summary-' + host).append(thead);
-    $('#summary-' + host).append($('<tbody>'));
-
-    for(var n in nodes) {
-        $('#summary-' + host + ' tbody').append(summary_node(nodes[n], server));
+        summary_node(id, nodes[id], server);
     }
 }
 
@@ -438,17 +425,7 @@ function rtinfo_parsing(response, host) {
 	// clearing everyting
 	$('body').attr('class', 'connected');
 
-    // ensure table exists
-    if($('#root-' + host).length == 0) {
-        var root = $('<div>', {'id': 'root-' + host});
-        root.append($('<table>', {'class': "table table-dark table-sm table-borderless font-monospace", 'id': "summary-" + host}));
-
-        $('#content').append(root);
-    }
-
-	//
 	// ordering hostname
-	//
 	var hosts = [];
 	var nodes = [];
 
@@ -462,11 +439,7 @@ function rtinfo_parsing(response, host) {
 			if(json.rtinfo[x].hostname == hosts[n])
 				nodes.push(json.rtinfo[x]);
 
-    // console.log(nodes);
-
-	//
 	// iterate over differents part showable/hiddable
-	//
 	summary(host, json, nodes);
 }
 
@@ -641,6 +614,7 @@ var caminfo;
 var backlog = {
     "relay": [],
     "temperature": [],
+    "pressure": [],
 };
 
 function recurring() {
@@ -710,12 +684,10 @@ function connect() {
             break;
 
             case "temperature":
-                // console.log(json);
                 return temperature_update(json['payload']);
             break;
 
             case "pressure":
-                // console.log(json);
                 return pressure_update(json['payload']);
             break;
 
