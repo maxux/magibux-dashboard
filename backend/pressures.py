@@ -13,16 +13,17 @@ class MagibuxPressures:
         self.sensors = 10
 
         self.pressure = dashboard.DashboardSlave("pressure")
-        self.pressinfo = [0] * self.sensors
+        self.pressraw = [] * self.sensors
+        self.pressinfo = []
 
-        self.lasttime = 0
+        for i in range(self.sensors):
+            self.pressinfo.append({
+                'value': 0,
+                'time': 0,
+                'way': None,
+            })
 
-        """
-        self.channels = {
-            "press1": "RGN",
-            "press0": "RGE"
-        }
-        """
+        self.lastcommit = self.pressinfo
 
     def loop(self):
         line = self.board.readline()
@@ -49,28 +50,30 @@ class MagibuxPressures:
                 print("[-] malformed or incomplete values line")
                 return
 
+            commit = False
+
             for id, value in enumerate(values):
-                if id == self.sensors:
-                    # list is complete
-                    print(self.pressinfo)
+                if value == "bar":
+                    break
 
-                    if time.time() > self.lasttime + 5:
-                        print("[+] pushing new values")
+                pressure = float(value)
 
-                        self.lasttime = time.time()
+                entry = self.pressinfo[id]
+                entry['way'] = None
 
-                        self.pressure.set(self.pressinfo)
-                        self.pressure.publish()
+                if pressure < entry['value'] - 0.04 or pressure > entry['value'] + 0.04:
+                    entry['time'] = int(time.time())
+                    entry['way'] = "down" if pressure < entry['value'] else "up"
+                    entry['value'] = pressure
 
-                    return
+                    commit = True
 
-                self.pressinfo[id] = float(value)
-
-            """ FIXME
-            if previous >= now + 0.05 or previous <= now - 0.05:
-                self.pressure.set(source, key)
+            if commit:
+                print("[+] pushing new value updated")
+                self.pressure.set(self.pressinfo)
                 self.pressure.publish()
 
+            """ FIXME
                 persistance = {
                     "type": "pressure",
                     "source": key,
