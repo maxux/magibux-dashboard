@@ -78,7 +78,9 @@ class MagibuxLocator:
         # FIXME: skip if not enough
         parsed['delta'] = distance
 
-        self.trip += distance
+        if distance > 0.2:
+            self.trip += distance
+
         parsed['trip'] = self.trip
 
         # inject hdop from gga
