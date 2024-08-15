@@ -568,7 +568,7 @@ function pressure_update(sensors) {
         }
         // update value with correct colorartion
         let color = tanks_update(id, sensor);
-        $("#pressure-" + id + " .value").removeClass("bg-success bg-dark bg-info bg-secondary text-dark text-light").addClass(color).html(value);
+        $("#pressure-" + id + " .value").removeClass("bg-success bg-dark bg-info bg-secondary text-dark text-light bg-warning bg-danger").addClass(color).html(value);
         $("#pressure-" + id + " .uptime").html(uptime[1]);
     }
 }
