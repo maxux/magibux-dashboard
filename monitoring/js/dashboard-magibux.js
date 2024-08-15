@@ -530,6 +530,21 @@ function temperature_update(sensors) {
     }
 }
 
+function tanks_update(id, sensor) {
+    let unit = [0, 2, 3, 4, 8, 9];
+    for (var i in unit) {
+        if (unit[i] == id) {
+            if (sensor['value'] < 3)
+                return ("bg-danger text-light");
+            else if (sensor['value'] < 6)
+                return ("bg-warning text-dark");
+            else
+                return ("bg-success text-light");
+        }
+    }
+    return (sensor['value'] > 1.4 ? "bg-success text-light" : "bg-secondary text-dark");
+}
+
 function pressure_update(sensors) {
     for(var id in sensors) {
         let sensor = sensors[id];
@@ -551,9 +566,8 @@ function pressure_update(sensors) {
             root.append(namediv).append(valdiv).append(updiv);
             $("#pressure").append(root);
         }
-
         // update value with correct colorartion
-        let color = (sensor['value'] > 1.4 ? "bg-success text-light" : "bg-secondary text-dark");
+        let color = tanks_update(id, sensor);
         $("#pressure-" + id + " .value").removeClass("bg-success bg-dark bg-info bg-secondary text-dark text-light").addClass(color).html(value);
         $("#pressure-" + id + " .uptime").html(uptime[1]);
     }
