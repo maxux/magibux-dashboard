@@ -595,7 +595,7 @@ function location_update(location) {
     $("#locality").html(place[0] + ", " + place[1]);
     $("#speed").html(location['speed'].toFixed(2));
 
-    $("#trip").html(location['trip'].toFixed(2));
+    $("#trip").html((location['trip']/1000).toFixed(2));
 }
 
 function relays_update(state) {
