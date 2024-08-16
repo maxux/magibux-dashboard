@@ -552,7 +552,6 @@ function tanks_update(id, sensor) {
         }
     }
     for (var f in unit) {
-        console.log(1);
         if (brakes[f] == id)
             return (sensor['value'] > 1.2 ? "bg-info text-dark" : "bg-secondary text-dark");
     }
