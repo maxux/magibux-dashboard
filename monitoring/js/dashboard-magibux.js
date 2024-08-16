@@ -539,7 +539,8 @@ function get_current_time() {
     return current_time;
 }
 function tanks_update(id, sensor) {
-    let unit = [0, 2, 3, 4, 8, 9];
+    let unit = [0, 2, 3, 4, 9];
+    let brakes = [5, 7, 8];
     for (var i in unit) {
         if (unit[i] == id) {
             if (sensor['value'] < 3)
@@ -549,6 +550,11 @@ function tanks_update(id, sensor) {
             else
                 return ("bg-success text-light");
         }
+    }
+    for (var f in unit) {
+        console.log(1);
+        if (brakes[f] == id)
+            return (sensor['value'] > 1.2 ? "bg-info text-dark" : "bg-secondary text-dark");
     }
     return (sensor['value'] > 1.4 ? "bg-success text-light" : "bg-secondary text-dark");
 }
