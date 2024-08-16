@@ -530,6 +530,14 @@ function temperature_update(sensors) {
     }
 }
 
+function get_current_time() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const secondes = String(now.getSeconds()).padStart(2, '0');
+    const current_time = `${hours}:${minutes}:${secondes}`;
+    return current_time;
+}
 function tanks_update(id, sensor) {
     let unit = [0, 2, 3, 4, 8, 9];
     for (var i in unit) {
@@ -631,7 +639,12 @@ var backlog = {
     "pressure": [],
 };
 
+function update_hours_time() {
+    $("#current-time").html(get_current_time());
+}
+
 function recurring() {
+    update_hours_time();
     update_relays_time();
     update_temperature_time();
     update_pressure_time();
