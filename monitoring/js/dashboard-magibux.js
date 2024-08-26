@@ -502,6 +502,16 @@ function elapsed_time(source) {
     return [uptime, days.toFixed(0) + plurial(days, " day")];
 }
 
+let temperature_sensors = {
+    "28-ff641e93a11cb3": [[5, "secondary"], [20, "info"], [27, "success"], [38, "danger"], [60, "dark"]],
+    "28-ff641e93b9a587": [[5, "secondary"], [20, "info"], [27, "success"], [38, "danger"], [60, "dark"]],
+    "28-ff641e93b543fe": [[5, "secondary"], [20, "info"], [27, "success"], [38, "danger"], [60, "dark"]],
+    "28-ff641e93b5b7eb": [[5, "secondary"], [20, "info"], [27, "success"], [38, "danger"], [60, "dark"]],
+    "28-ff641f7593ab27": [[5, "secondary"], [20, "info"], [27, "success"], [38, "danger"], [60, "dark"]],
+    "28-ff641f43f47d96": [[5, "secondary"], [20, "info"], [27, "success"], [38, "danger"], [60, "dark"]],
+    "28-ff641f43ca63e5": [[5, "secondary"], [20, "info"], [27, "success"], [38, "danger"], [60, "dark"]],
+};
+
 function temperature_update(sensors) {
     for(var id in sensors) {
         let sensor = sensors[id];
@@ -512,7 +522,7 @@ function temperature_update(sensors) {
             var root = $("<div>", {"id": "temperature-" + id, "class": "row"});
 
             var namediv = $("<div>", {"class": "col-6"});
-            namediv.append($("<div>", {"class": "name"}).html(id));
+            namediv.append($("<div>", {"class": "name font-monospace"}).html(id));
 
             var valdiv = $("<div>", {"class": "col-2"});
             valdiv.append($("<span>", {"class": "value badge rounded-pill bg-info text-dark"}).html(value));
@@ -525,6 +535,20 @@ function temperature_update(sensors) {
         }
 
         // update value with correct colorartion
+        $("#temperature-" + id + " .value").removeClass().addClass("value badge rounded-pill");
+
+        // update badge color
+        if(temperature_sensors[id] !== undefined) {
+            for(let idx in temperature_sensors[id]) {
+                let threshold = temperature_sensors[id][idx];
+
+                if(sensor["value"] < threshold[0]) {
+                    $("#temperature-" + id + " .value").addClass("text-bg-" + threshold[1]);
+                    break;
+                }
+            }
+        }
+
         $("#temperature-" + id + " .value").html(value);
         $("#temperature-" + id + " .uptime").html(uptime[1]);
     }
