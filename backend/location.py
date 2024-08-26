@@ -1,4 +1,5 @@
 import serial
+import time
 import tools.nmea0183
 import dashboard
 import redis
@@ -17,6 +18,10 @@ class MagibuxLocator:
         self.slave = dashboard.DashboardSlave("location")
         self.previous = None
         self.trip = 0
+
+        self.odometer = self.places.get("odometer")
+        if self.odometer:
+            self.odometer = float(self.odometer)
 
     def distance(self, lat1, lon1, lat2, lon2):
         # haversine // https://www.movable-type.co.uk/scripts/latlong.html
@@ -64,6 +69,7 @@ class MagibuxLocator:
             return
 
         coord = parsed['coord']
+        speed = parsed['speed']
 
         if not coord['lat'] or not coord['lng']:
             return
@@ -75,13 +81,17 @@ class MagibuxLocator:
 
         # compute distance from last location
         distance = self.distance(coord['lat'], coord['lng'], self.previous['lat'], self.previous['lng'])
-        # FIXME: skip if not enough
+
         parsed['delta'] = distance
 
-        if distance > 0.2:
+        if speed >= 2:
             self.trip += distance
+            self.odometer += distance
+
+            self.places.set("odometer", self.odometer)
 
         parsed['trip'] = self.trip
+        parsed['odometer'] = self.odometer
 
         # inject hdop from gga
         if 'hdop' in self.gga:
@@ -96,7 +106,13 @@ class MagibuxLocator:
 
     def monitor(self):
         while True:
-            self.loop()
+            try:
+                self.loop()
+            except Exception as e:
+                print(e)
+
+                return False
+
 
 if __name__ == "__main__":
     port = "/dev/serial/by-id/usb-u-blox_AG_-_www.u-blox.com_u-blox_7_-_GPS_GNSS_Receiver-if00"
@@ -106,5 +122,6 @@ if __name__ == "__main__":
 
     print(f"[+] opening serial port: {port}")
 
-    locator = MagibuxLocator(port)
-    locator.monitor()
+    while True:
+        locator = MagibuxLocator(port)
+        locator.monitor()
