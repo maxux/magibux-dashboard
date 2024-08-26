@@ -58,6 +58,10 @@ body {
     --bs-bg-opacity: 0.4;
 }
 
+.badge {
+    --bs-bg-opacity: 1;
+}
+
 .table-dark {
     --bs-table-bg: transparent;
 }

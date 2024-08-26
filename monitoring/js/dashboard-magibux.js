@@ -593,9 +593,10 @@ function location_update(location) {
 
     $("#coord").html(lat + ", " + lng);
     $("#locality").html(place[0] + ", " + place[1]);
-    $("#speed").html(location['speed'].toFixed(2));
+    $("#speed").html(location['speed'].toFixed(0));
 
-    $("#trip").html((location['trip']/1000).toFixed(2));
+    $("#trip").html((location['trip'] / 1000).toFixed(2));
+    $("#odometer").html((location['odometer'] / 1000).toFixed(2));
 }
 
 function relays_update(state) {
