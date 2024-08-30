@@ -302,19 +302,14 @@ function summary_node(id, node, server) {
 
     var status = 'text-success';
 
-    if(node.lasttime + 5 < server.servertime) {
-        // be nice with magibux, it sends update
-        // with 10 seconds interval
-        if(node.hostname != "magibux") {
-            status = 'text-warning';
-        }
-    }
+    if(node.lasttime + 5 < server.servertime)
+        status = 'text-warning';
 
     if(node.lasttime + 30 < server.servertime)
-        status = 'text-danger';
+        status = 'text-danger text-bg-danger';
 
     header.html(node.hostname);
-    header.removeClass("text-danger text-warning text-success").addClass(status);
+    header.removeClass("text-bg-danger text-danger text-warning text-success").addClass(status);
 
     body.empty();
 
@@ -324,8 +319,14 @@ function summary_node(id, node, server) {
     let ram = percentvalue(node.memory.ram_used, node.memory.ram_total);
     body.append($("<span>", {"class": "badge rounded-pill bg-dark mx-1 " + sc(colorize(ram))}).html("RAM " + ram + " %"));
 
-    let up = uptime(node.uptime);
-    body.append($('<span>', {"class": "badge rounded-pill bg-dark mx-1 " + sc(uptime_color(node.uptime))}).html(up));
+    if(node.lasttime + 30 < server.servertime) {
+        let up = uptime(elapsed_time(node.lasttime)[0]);
+        body.append($('<span>', {"class": "badge rounded-pill bg-dark mx-1"}).html("Down " + up));
+
+    } else {
+        let up = uptime(node.uptime);
+        body.append($('<span>', {"class": "badge rounded-pill bg-dark mx-1 " + sc(uptime_color(node.uptime))}).html(up));
+    }
 
     /*
     tr.append($('<td>', {'class': status}).append(hostname));
