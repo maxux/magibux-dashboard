@@ -713,6 +713,13 @@ function update_pressure_time() {
     }
 }
 
+function relay_ajax(source) {
+    source.preventDefault();
+    let target = $(source.target).attr("href");
+
+    $.get(target);
+}
+
 function connect() {
     socket = new WebSocket("ws://monitoring.magibux.maxux.net:30900/");
 
@@ -772,6 +779,11 @@ function fresh_reload() {
 $(document).ready(function() {
     setInterval(recurring, 1000);
     setTimeout(fresh_reload, 3600000);
+
+    // set relays button ajax
+    $(".relay-button").each(function(index) {
+        $(this).on("click", relay_ajax);
+    });
 
     connect();
 });

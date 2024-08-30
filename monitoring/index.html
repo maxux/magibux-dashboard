@@ -98,9 +98,16 @@
                         <div id="locality"></div>
                     </div>
                 </div>
-                <div class="card text-bg-dark mb-3">
+                <div class="card text-bg-dark mb-3 large-hide">
                     <div class="card-body" class="container m-0 p-0">
                         <h3 id="current-time" class="text-center"></h3>
+                    </div>
+                </div>
+                <div class="card text-bg-dark mb-3">
+                    <div class="card-body" class="container m-0 p-0 text-center">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#controlpanel">
+                            Control Panel
+                        </button>
                     </div>
                 </div>
             </div>
@@ -108,6 +115,38 @@
 
         <div id="disconnected">Connecting...</div>
 	</div>
+    </div>
+
+    <div class="modal fade" id="controlpanel" tabindex="-1" aria-labelledby="controlpanel-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="controlpanel-label">Quick Control Panel</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- FIXME -->
+                    <a href="/poweron/0" class="btn btn-success relay-button">0</a>
+                    <a href="/poweron/1" class="btn btn-success relay-button">1</a>
+                    <a href="/poweron/2" class="btn btn-success relay-button">2</a>
+                    <a href="/poweron/3" class="btn btn-success relay-button">3</a>
+                    <a href="/poweron/4" class="btn btn-success relay-button">4</a>
+                    <a href="/poweron/5" class="btn btn-success relay-button">5</a>
+                    <a href="/poweron/6" class="btn btn-success relay-button">6</a>
+                    <a href="/poweron/7" class="btn btn-success relay-button">7</a>
+                    <br>
+
+                    <a href="/poweroff/0" class="btn btn-danger relay-button">0</a>
+                    <a href="/poweroff/1" class="btn btn-danger relay-button">1</a>
+                    <a href="/poweroff/2" class="btn btn-danger relay-button">2</a>
+                    <a href="/poweroff/3" class="btn btn-danger relay-button">3</a>
+                    <a href="/poweroff/4" class="btn btn-danger relay-button">4</a>
+                    <a href="/poweroff/5" class="btn btn-danger relay-button">5</a>
+                    <a href="/poweroff/6" class="btn btn-danger relay-button">6</a>
+                    <a href="/poweroff/7" class="btn btn-danger relay-button">7</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="js/jquery-3.6.4.min.js"></script>
