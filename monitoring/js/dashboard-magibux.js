@@ -444,6 +444,20 @@ function rtinfo_parsing(response, host) {
 	summary(host, json, nodes);
 }
 
+function camera_select(source) {
+    source.preventDefault();
+    let camid = source.target.id.slice(-1);
+    console.log(camid);
+    $("#camera-selected-label").html("Camera #" + camid);
+    $("#camera-selected-preview").attr("src", "http://camera.magibux.maxux.net:10001/" + camid + "/stream");
+    $("#camera-selected").modal("toggle");
+}
+
+const cameraModal = document.getElementById('camera-selected')
+cameraModal.addEventListener('hidden.bs.modal', event => {
+    $("#camera-selected-preview").attr("src", "#");
+})
+
 function camera_update(caminfo) {
     for(var id in caminfo) {
         let camdata = caminfo[id];
@@ -464,10 +478,17 @@ function camera_update(caminfo) {
             if((camdata['image_width'] / camdata['image_height']) < 1.5)
                 target = "#camera-regular";
 
-            var image = $('<img>', {'id': 'camera-' + camdata['id'], 'class': 'rounded'});
+            let link = $("<a>");
+            link.attr("role", "button");
+            link.attr("href", "#camera-selected");
+            link.data("bs-toggle", "modal");
+            link.on("click", camdata['id'], camera_select);
+
+            let image = $('<img>', {'id': 'camera-' + camdata['id'], 'class': 'rounded'});
             image.attr("src", location);
 
-            $(target).append(image);
+            link.append(image);
+            $(target).append(link);
         }
     }
 }
@@ -563,6 +584,7 @@ function get_current_time() {
     const current_time = `${hours}:${minutes}:${secondes}`;
     return current_time;
 }
+
 function tanks_update(id, sensor) {
     let unit = [0, 2, 3, 4, 9];
     let brakes = [5, 7, 8];
