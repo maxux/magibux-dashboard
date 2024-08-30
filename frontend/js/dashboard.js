@@ -44,6 +44,34 @@ function pressure_colorize(name, value) {
     return "text-bg-danger";
 }
 
+function temperature_update(sensors) {
+    for(var id in sensors) {
+        let sensor = sensors[id];
+        let value = sensor["value"].toFixed(2) + "°C";
+        let uptime = elapsed_time(sensor["changed"]);
+
+        if($("#temperature-" + id).length == 0) {
+            var root = $("<div>", {"id": "temperature-" + id, "class": "row"});
+
+            var namediv = $("<div>", {"class": "col-6"});
+            namediv.append($("<div>", {"class": "name"}).html(id));
+
+            var valdiv = $("<div>", {"class": "col-2"});
+            valdiv.append($("<span>", {"class": "value badge rounded-pill bg-info text-dark"}).html(value));
+
+            var updiv = $("<div>", {"class": "col-4 text-end font-monospace"});
+            updiv.append($("<span>", {"class": "uptime badge rounded-pill bg-dark"}).html(uptime[1]));
+
+            root.append(namediv).append(valdiv).append(updiv);
+            $("#temperature").append(root);
+        }
+
+        // update value with correct colorartion
+        $("#temperature-" + id + " .value").html(value);
+        $("#temperature-" + id + " .uptime").html(uptime[1]);
+    }
+}
+
 function doors_state(main, door) {
     if(main == null)
         return {"state": "Unknown", "color": "text-bg-secondary"};
@@ -66,8 +94,19 @@ function connect() {
         console.log(json);
 
         switch(json['type']) {
+            case "rtinfo":
+            case "cameras":
+                break;
+
+            case "temperature":
+                console.log(json);
+                return temperature_update(json['payload']);
+            break;
+
+            /*
             case "temperature":
                 var values = json['payload'];
+
                 for(var index in values) {
                     $("#temperature-" + index).removeClass();
                     $("#temperature-" + index).addClass("badge rounded-pill");
@@ -85,6 +124,7 @@ function connect() {
                     $("#" + name).html(state['state']);
                 }
             break;
+            */
 
             case "pressure":
                 var values = json['payload'];
