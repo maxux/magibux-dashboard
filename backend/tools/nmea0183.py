@@ -99,7 +99,8 @@ class GPSRawData:
         data = {
             'type': 'vtg',
             'track': track,
-            'speed': speed
+            'speed': speed, # legacy support
+            'kph': speed
         }
 
         return data

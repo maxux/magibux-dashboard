@@ -6,6 +6,7 @@ import redis
 import json
 import math
 import sys
+import traceback
 
 class MagibuxLocator:
     def __init__(self, port):
@@ -13,7 +14,7 @@ class MagibuxLocator:
         self.parser = tools.nmea0183.GPSData()
         self.places = redis.Redis()
 
-        self.gga = {}
+        self.frame = self.reset()
 
         self.slave = dashboard.DashboardSlave("location")
         self.previous = None
@@ -22,6 +23,15 @@ class MagibuxLocator:
         self.odometer = self.places.get("odometer")
         if self.odometer:
             self.odometer = float(self.odometer)
+
+    def reset(self):
+        frame = {
+            "gga": None,
+            "vtg": None,
+            "rmc": None
+        }
+
+        return frame
 
     def distance(self, lat1, lon1, lat2, lon2):
         # haversine // https://www.movable-type.co.uk/scripts/latlong.html
@@ -60,21 +70,35 @@ class MagibuxLocator:
         parsed = self.parser.parse(data)
         print(parsed)
 
-        if parsed['type'] not in ['rmc', 'gga']:
-            # only process GPRMC and GPGGA for now
+        if parsed['type'] not in ['rmc', 'gga', 'vtg']:
+            # only process GPRMC, GPGGA and GPVTG for now
             return
 
-        if parsed['type'] == 'gga':
-            self.gga = parsed
-            return
+        self.frame[parsed['type']] = parsed
 
-        coord = parsed['coord']
-        speed = parsed['speed']
+        if self.frame['rmc'] and self.frame['gga'] and self.frame['vtg']:
+            return self.commit()
+
+    def commit(self):
+        print("--- COMMIT ---")
+        response = {}
+
+        coord = self.frame['rmc']['coord']
 
         if not coord['lat'] or not coord['lng']:
             return
 
-        parsed['place'] = self.place(coord['lat'], coord['lng'])
+        response['coord'] = coord
+        response['speed'] = self.frame['vtg']['kph']
+        response['place'] = None
+        response['timestamp'] = self.frame['rmc']['timestamp']
+        response['altitude'] = self.frame['gga']['altitude']
+
+        try:
+            response['place'] = self.place(coord['lat'], coord['lng'])
+
+        except Exception as e:
+            traceback.print_exc()
 
         if not self.previous:
             self.previous = coord
@@ -82,35 +106,36 @@ class MagibuxLocator:
         # compute distance from last location
         distance = self.distance(coord['lat'], coord['lng'], self.previous['lat'], self.previous['lng'])
 
-        parsed['delta'] = distance
+        response['delta'] = distance
 
-        if speed >= 2:
+        if response['speed'] >= 2:
             self.trip += distance
             self.odometer += distance
 
             self.places.set("odometer", self.odometer)
 
-        parsed['trip'] = self.trip
-        parsed['odometer'] = self.odometer
+        response['trip'] = self.trip
+        response['odometer'] = self.odometer
 
         # inject hdop from gga
-        if 'hdop' in self.gga:
-            parsed['hdop'] = self.gga['hdop']
+        if 'hdop' in self.frame['gga']:
+            response['hdop'] = self.frame['gga']['hdop']
 
-        self.slave.set(parsed)
+        self.slave.set(response)
         self.slave.publish()
 
         # FIXME: add persistance
 
         self.previous = coord
+        self.frame = self.reset()
 
     def monitor(self):
         while True:
             try:
                 self.loop()
-            except Exception as e:
-                print(e)
 
+            except Exception as e:
+                traceback.print_exc()
                 return False
 
 
