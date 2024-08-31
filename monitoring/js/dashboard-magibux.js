@@ -649,7 +649,7 @@ function location_update(location) {
 function tracker_update(tracking) {
     $("#tracker-sent").html(tracking['sent']);
     $("#tracker-ack").html(tracking['ack']);
-    $("#tracker-timeout").html(tracking['timeout']);
+    $("#tracker-failed").html(tracking['failed']);
     $("#tracker-skip").html(tracking['skip']);
 }
 

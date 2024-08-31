@@ -26,7 +26,7 @@ class MagibuxTracker:
         self.stats = {
             "sent": 0,
             "ack": 0,
-            "timeout": 0,
+            "failed": 0,
             "skip": 0,
         }
 
@@ -69,7 +69,7 @@ class MagibuxTracker:
                 "lat": payload['coord']['lat'],
                 "lng": payload['coord']['lng'],
                 "speed": payload['speed'],
-                "alt": 0,
+                "alt": payload['altitude'],
                 "ts": payload['timestamp'],
             }
 
@@ -83,9 +83,9 @@ class MagibuxTracker:
 
                 print(response)
 
-            except requests.exceptions.Timeout:
-                print("REQUEST TIMED OUT, IMPLEMENT BACKLOG")
-                self.stats['timeout'] += 1
+            except Exception :
+                print("REQUEST FAILED, IMPLEMENT BACKLOG")
+                self.stats['failed'] += 1
 
             print(self.stats)
 
