@@ -686,22 +686,47 @@ function relays_update(state) {
         let uptime = elapsed_time(state[channel][1]);
 
         if($("#relay-channel-" + channel).length == 0) {
+            //
+            // status nodes
+            //
             var root = $("<div>", {"id": "relay-channel-" + channel, "class": "row"});
             var nametag = $("<div>", {"class": "col-6 name"}).html(name);
 
-            var sensortag = $("<div>", {"class": "col-2"});
-            sensortag.append($("<span>", {"class": "value badge rounded-pill"}).html(value));
+            var relaytag = $("<div>", {"class": "col-2"});
+            relaytag.append($("<span>", {"class": "value badge rounded-pill"}).html(value));
 
             var uptimetag = $("<div>", {"class": "col-4 text-end font-monospace"});
             uptimetag.append($("<span>", {"class": "uptime badge rounded-pill bg-dark"}).html(uptime[1]));
 
-            root.append(nametag).append(sensortag).append(uptimetag);
+            root.append(nametag).append(relaytag).append(uptimetag);
             $("#relays").append(root);
+
+            //
+            // control nodes
+            //
+            var root = $("<div>", {"id": "relay-control-" + channel, "class": "row my-1"});
+            var nametag = $("<div>", {"class": "col-6 name"}).html(name);
+
+            var relaytag = $("<div>", {"class": "col-2"});
+            relaytag.append($("<span>", {"class": "value badge rounded-pill bg-dark"}).html(value));
+
+            let btnon = $("<a>", {"class": "btn btn-success btn-sm relay-button mx-1", "href": "/poweron/" + channel}).html("On");
+            btnon.on("click", relay_ajax);
+
+            let btnoff = $("<a>", {"class": "btn btn-danger btn-sm relay-button", "href": "/poweroff/" + channel}).html("Off");
+            btnoff.on("click", relay_ajax);
+
+            var btngroup = $("<div>", {"class": "col-4 text-end"});
+            btngroup.append(btnon).append(btnoff);
+
+            root.append(nametag).append(relaytag).append(btngroup);
+            $("#relay-controls").append(root);
         }
 
         // only update value
         let color = (state[channel][0] ? "bg-success" : "bg-dark");
         $("#relay-channel-" + channel + " .value").removeClass("bg-success bg-dark").addClass(color).html(value);
+        $("#relay-control-" + channel + " .value").removeClass("bg-success bg-dark").addClass(color).html(value);
         $("#relay-channel-" + channel + " .uptime").html(uptime[1]);
     }
 }
@@ -828,11 +853,6 @@ function fresh_reload() {
 $(document).ready(function() {
     setInterval(recurring, 1000);
     setTimeout(fresh_reload, 3600000);
-
-    // set relays button ajax
-    $(".relay-button").each(function(index) {
-        $(this).on("click", relay_ajax);
-    });
 
     connect();
 });
