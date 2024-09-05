@@ -96,12 +96,15 @@
                         <h5><span id="odometer"></span> km</h5>
                         <div id="coord"></div>
                         <div id="locality"></div>
-                        <div class="my-3 font-monospace">
-                            Transmitter: <span id="tracker-transmitter">..</span><br>
-                            Received: <span id="tracking-received">..</span> /
-                            Sent: <span id="tracking-sent">..</span><br>
-                            Failed: <span id="tracking-failed">..</span> /
-                            Backlog: <span id="tracking-backlog">..</span>
+                        <div class="mt-3 font-monospace">
+                            <span id="tracker-transmitter" class="badge">..</span>
+                        </div>
+
+                        <div class="font-monospace">
+                            <span id="tracking-received" class="badge text-bg-primary">..</span>
+                            <span id="tracking-sent" class="badge text-bg-success">..</span>
+                            <span id="tracking-failed" class="badge text-bg-danger">..</span>
+                            <span id="tracking-backlog" class="badge text-bg-dark">..</span>
                         </div>
                     </div>
                 </div>

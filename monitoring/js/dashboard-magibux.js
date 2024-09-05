@@ -662,7 +662,16 @@ function location_update(location) {
 }
 
 function tracker_update(tracker) {
-    $("#tracker-transmitter").html(tracker['transmitter']);
+    var status = "Transmission enabled";
+    var color = "text-bg-success";
+
+    if(tracker['transmitter'] == false) {
+        status = "Transmission suspended";
+        color = "text-bg-secondary";
+    }
+
+    $("#tracker-transmitter").removeClass("text-bg-success text-bg-secondary");;
+    $("#tracker-transmitter").addClass(color).html(status);
 }
 
 function tracking_update(tracking) {
