@@ -118,6 +118,9 @@
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#control-panel">
                             Control Panel
                         </button>
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#tracking-panel">
+                            Tracking Panel
+                        </button>
                     </div>
                 </div>
             </div>
@@ -135,6 +138,34 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div id="relay-controls" class="modal-body container">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="tracking-panel" tabindex="-1" aria-labelledby="tracking-panel-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="control-panel-label">Tracking Panel</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="tracking-controls" class="modal-body container">
+                    <div id="tracking-control-new-session" class="row mb-3">
+                        <div class="col-12 text-center">
+                            <a href="/control/tracker/new-session" class="btn btn-primary tracker-control-button">New Session</a>
+                        </div>
+                    </div>
+
+                    <div id="tracking-control-transmitter" class="row my-1">
+                        <div class="col-6 text-end">
+                            <a href="/control/transmitter/enable" class="btn btn-success tracker-control-button">Enable transmitter</a>
+                        </div>
+
+                        <div class="col-6 text-start">
+                            <a href="/control/transmitter/disable" class="btn btn-danger tracker-control-button">Disable transmitter</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

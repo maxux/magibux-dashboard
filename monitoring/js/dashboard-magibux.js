@@ -662,11 +662,11 @@ function location_update(location) {
 }
 
 function tracker_update(tracker) {
-    var status = "Transmission enabled";
+    var status = "Streaming live update";
     var color = "text-bg-success";
 
     if(tracker['transmitter'] == false) {
-        status = "Transmission suspended";
+        status = "Live update suspended";
         color = "text-bg-secondary";
     }
 
@@ -724,10 +724,10 @@ function relays_update(state) {
             relaytag.append($("<span>", {"class": "value badge rounded-pill bg-dark"}).html(value));
 
             let btnon = $("<a>", {"class": "btn btn-success btn-sm relay-button mx-1", "href": "/poweron/" + channel}).html("On");
-            btnon.on("click", relay_ajax);
+            btnon.on("click", monitoring_ajax);
 
             let btnoff = $("<a>", {"class": "btn btn-danger btn-sm relay-button", "href": "/poweroff/" + channel}).html("Off");
-            btnoff.on("click", relay_ajax);
+            btnoff.on("click", monitoring_ajax);
 
             var btngroup = $("<div>", {"class": "col-4 text-end"});
             btngroup.append(btnon).append(btnoff);
@@ -796,7 +796,7 @@ function update_pressure_time() {
     }
 }
 
-function relay_ajax(source) {
+function monitoring_ajax(source) {
     source.preventDefault();
     let target = $(source.target).attr("href");
 
@@ -870,6 +870,11 @@ function fresh_reload() {
 $(document).ready(function() {
     setInterval(recurring, 1000);
     setTimeout(fresh_reload, 3600000);
+
+    // enable ajax on static tracker control
+    $(".tracker-control-button").each(function(index) {
+        $(this).on("click", monitoring_ajax);
+    });
 
     connect();
 });
