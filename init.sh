@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# FIXME: missing tracker and tracklog
 modules="dashboard persistance location relay temperatures pressures rtinfo cameras"
 
 for module in $modules; do
