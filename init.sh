@@ -12,12 +12,6 @@ for module in $modules; do
     sleep 0.2
 done
 
-# tmux new-sess -s dash-main -c /root/dashboard/backend -d 'python dashboard.py'
-# tmux new-sess -s persistance -c /root/dashboard/backend -d 'python persistance.py'
-# tmux new-sess -s locator -c /root/dashboard/backend -d 'python location.py'
-# tmux new-sess -s relays -c /root/dashboard/backend -d 'python relay.py'
-# tmux new-sess -s temperatures -c /root/dashboard/backend -d 'python temperatures.py'
-# tmux new-sess -s pressures -c /root/dashboard/backend -d 'python pressures.py'
-# tmux new-sess -s rtinfo-fetcher -c /root/dashboard/backend -d 'python rtinfo.py'
-# tmux new-sess -s camupdate -c /root/dashboard/backend -d 'python cameras.py'
-# tmux new-sess -s camera -d -c /home/camera/camstream
+tmux new-sess -s dashboard-gateway -d -c /root/dashboard/webcontrol
+tmux send-keys -t dashboard-gateway "python dashboard-gateway.py" ENTER
+
