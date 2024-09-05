@@ -1,10 +1,11 @@
 html {
     background-image: url(../resources/wallpaper/default.jpg);
     background-size: cover;
+    background-attachment: fixed;
 }
 
-html, body {
-    height: 100%;
+body {
+    min-height: 100vh;
 }
 
 .large-hide {
