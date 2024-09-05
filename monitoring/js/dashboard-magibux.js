@@ -661,11 +661,15 @@ function location_update(location) {
     $("#odometer").html((location['odometer'] / 1000).toFixed(2));
 }
 
-function tracker_update(tracking) {
-    $("#tracker-sent").html(tracking['sent']);
-    $("#tracker-ack").html(tracking['ack']);
-    $("#tracker-failed").html(tracking['failed']);
-    $("#tracker-skip").html(tracking['skip']);
+function tracker_update(tracker) {
+    $("#tracker-transmitter").html(tracker['transmitter']);
+}
+
+function tracking_update(tracking) {
+    $("#tracking-received").html(tracking['received']);
+    $("#tracking-sent").html(tracking['sent']);
+    $("#tracking-failed").html(tracking['failed']);
+    $("#tracking-backlog").html(tracking['backlog']);
 }
 
 function relays_update(state) {
@@ -819,6 +823,10 @@ function connect() {
 
             case "tracker":
                 return tracker_update(json['payload']);
+            break;
+
+            case "tracking":
+                return tracking_update(json['payload']);
             break;
 
             case "temperature":
