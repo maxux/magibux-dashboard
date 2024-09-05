@@ -605,6 +605,20 @@ function tanks_update(id, sensor) {
     return (sensor['value'] > 1.4 ? "bg-success text-light" : "bg-secondary text-dark");
 }
 
+let pressure_names = [
+    ["Brakes: Front", "tank"],
+    ["(unknown)", "tank"],
+    ["Brakes: Back", "tank"],
+    ["Brakes: Park", "tank"],
+    ["(unknown)", "tank"],
+    ["(unknown)", "tank"],
+    ["(unknown)", "tank"],
+    ["(unknown)", "tank"],
+    ["Brakes: Front", "live"],
+    ["Brakes: Back", "live"],
+    ["(unknown)", "tank"],
+];
+
 function pressure_update(sensors) {
     for(var id in sensors) {
         let sensor = sensors[id];
@@ -615,7 +629,7 @@ function pressure_update(sensors) {
             var root = $("<div>", {"id": "pressure-" + id, "class": "row"});
 
             var namediv = $("<div>", {"class": "col-5"});
-            namediv.append($("<div>", {"class": "name"}).html("Channel " + (parseInt(id) + 1)));
+            namediv.append($("<small>", {"class": "name font-monospace"}).html(pressure_names[id][0]));
 
             var valdiv = $("<div>", {"class": "col-3"});
             valdiv.append($("<span>", {"class": "value badge rounded-pill bg-info text-dark"}).html(value));
@@ -626,6 +640,7 @@ function pressure_update(sensors) {
             root.append(namediv).append(valdiv).append(updiv);
             $("#pressure").append(root);
         }
+
         // update value with correct colorartion
         let color = tanks_update(id, sensor);
         $("#pressure-" + id + " .value").removeClass("bg-success bg-dark bg-info bg-secondary text-dark text-light bg-warning bg-danger").addClass(color).html(value);
