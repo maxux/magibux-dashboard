@@ -14,20 +14,11 @@ class MagibuxTracker:
         self.subs.subscribe('dashboard')
 
         self.baseurl = "http://gps.maxux.net"
+        self.backlogger = redis.Redis()
 
-        if "locationpwd" not in os.environ:
-            raise RuntimeError("No tracking password set (via environment variable)")
-
-        self.password = os.environ["locationpwd"]
-        self.headers = {"X-GPS-Auth": self.password}
-
-        self.transmitter = False
-        self.backlog = []
-        self.stats = {
-            "sent": 0,
-            "ack": 0,
-            "failed": 0,
-            "skip": 0,
+        self.states = {
+            "transmitter": False,
+            "session": None,
         }
 
         self.slave = dashboard.DashboardSlave("tracker")
@@ -38,59 +29,56 @@ class MagibuxTracker:
 
         return (status["status"] == "success")
 
+    def backlog(self, message):
+        self.backlogger.publish("tracker-backlog", message)
+
+    def process(self, message):
+        if not self.states["transmitter"]:
+            return None
+
+        if message['type'] != "message":
+            return None
+
+        entry = json.loads(message["data"].decode('utf-8'))
+        if entry['id'] != "location":
+            return None
+
+        payload = entry['payload']
+        print(payload)
+
+        now = datetime.now()
+
+        frame = {
+            "time": now.strftime("%H:%M:%S"),
+            "date": now.strftime("%Y-%m-%d"),
+            "class": "gps",
+            "acc": 1,
+            "lat": payload['coord']['lat'],
+            "lng": payload['coord']['lng'],
+            "speed": payload['speed'],
+            "alt": payload['altitude'],
+            "ts": payload['timestamp'],
+        }
+
+        encoded = json.dumps(frame)
+        print(encoded)
+
+        print("-- BACKLOGGING --")
+        self.backlogger.rpush("tracker-backlog", encoded)
+
+        # FIXME: only publish on changes
+        self.slave.set(self.states)
+        self.slave.publish()
+
+        return True
+
     def monitor(self):
         while True:
             message = self.subs.get_message(ignore_subscribe_messages=True, timeout=1.0)
             # print(message)
 
-            if not self.transmitter:
-                continue
-
-            if message is None:
-                continue
-
-            if message['type'] != "message":
-                continue
-
-            entry = json.loads(message["data"].decode('utf-8'))
-            if entry['id'] != "location":
-                continue
-
-            payload = entry['payload']
-            print(payload)
-
-            now = datetime.now()
-
-            frame = {
-                "time": now.strftime("%H:%M:%S"),
-                "date": now.strftime("%Y-%m-%d"),
-                "class": "gps",
-                "acc": 1,
-                "lat": payload['coord']['lat'],
-                "lng": payload['coord']['lng'],
-                "speed": payload['speed'],
-                "alt": payload['altitude'],
-                "ts": payload['timestamp'],
-            }
-
-            encoded = json.dumps(frame)
-            print(encoded)
-
-            try:
-                response = requests.post(f"{self.baseurl}/api/push/datapoint", headers=self.headers, data=encoded, timeout=1.0)
-                if response.status_code == 200:
-                    self.stats['sent'] += 1
-
-                print(response)
-
-            except Exception :
-                print("REQUEST FAILED, IMPLEMENT BACKLOG")
-                self.stats['failed'] += 1
-
-            print(self.stats)
-
-            self.slave.set(self.stats)
-            self.slave.publish()
+            if message:
+                self.process(message)
 
 if __name__ == "__main__":
     tracker = MagibuxTracker()
@@ -99,5 +87,5 @@ if __name__ == "__main__":
         print("CREATING NEW SESSION")
         tracker.session()
 
-    tracker.transmitter = True
+    tracker.states["transmitter"] = True
     tracker.monitor()
