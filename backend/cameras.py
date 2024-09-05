@@ -7,7 +7,7 @@ while True:
     print("[+] cameras: fetching")
 
     try:
-        response = requests.get("http://127.0.0.1:10001/status.json", timeout=2)
+        response = requests.get("http://camera.magibux.maxux.net:10001/status.json", timeout=2)
         caminfo = response.json()
 
         slave.set(caminfo['camera_status'])
