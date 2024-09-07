@@ -723,10 +723,10 @@ function relays_update(state) {
             var relaytag = $("<div>", {"class": "col-2"});
             relaytag.append($("<span>", {"class": "value badge rounded-pill bg-dark"}).html(value));
 
-            let btnon = $("<a>", {"class": "btn btn-success btn-sm relay-button mx-1", "href": "/poweron/" + channel}).html("On");
+            let btnon = $("<a>", {"class": "btn btn-success btn-sm relay-button mx-1", "href": "/control/poweron/" + channel}).html("On");
             btnon.on("click", monitoring_ajax);
 
-            let btnoff = $("<a>", {"class": "btn btn-danger btn-sm relay-button", "href": "/poweroff/" + channel}).html("Off");
+            let btnoff = $("<a>", {"class": "btn btn-danger btn-sm relay-button", "href": "/control/poweroff/" + channel}).html("Off");
             btnoff.on("click", monitoring_ajax);
 
             var btngroup = $("<div>", {"class": "col-4 text-end"});
