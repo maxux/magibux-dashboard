@@ -64,8 +64,13 @@ class MagibuxLocator:
         return [base[0], admin2, admin1, cinfo["name"]]
 
     def loop(self):
-        line = self.gps.readline()
-        data = line.decode('utf-8').strip()
+        try:
+            line = self.gps.readline()
+            data = line.decode('utf-8').strip()
+
+        except Exception:
+            traceback.print_exc()
+            return
 
         parsed = self.parser.parse(data)
         print(parsed)
@@ -97,7 +102,7 @@ class MagibuxLocator:
         try:
             response['place'] = self.place(coord['lat'], coord['lng'])
 
-        except Exception as e:
+        except Exception:
             traceback.print_exc()
 
         if not self.previous:
@@ -134,7 +139,7 @@ class MagibuxLocator:
             try:
                 self.loop()
 
-            except Exception as e:
+            except Exception:
                 traceback.print_exc()
                 return False
 

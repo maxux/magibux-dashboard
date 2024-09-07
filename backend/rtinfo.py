@@ -1,5 +1,6 @@
 import requests
 import dashboard
+import traceback
 
 slave = dashboard.DashboardSlave("rtinfo")
 
@@ -14,7 +15,7 @@ while True:
 
         slave.publish()
 
-    except Exception as e:
-        print(e)
+    except Exception:
+        traceback.print_exc()
 
     slave.sleep(1)

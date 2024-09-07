@@ -4,6 +4,7 @@ import time
 import json
 import redis
 import sys
+import traceback
 
 class MagibuxPressures:
     def __init__(self, port):
@@ -26,13 +27,12 @@ class MagibuxPressures:
         self.lastcommit = self.pressinfo
 
     def loop(self):
-        line = self.board.readline()
-
         try:
+            line = self.board.readline()
             data = line.decode('utf-8').strip()
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            traceback.print_exc()
             return
 
         print(data)

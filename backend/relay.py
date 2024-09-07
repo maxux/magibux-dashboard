@@ -4,6 +4,7 @@ import json
 import time
 import redis
 import sys
+import traceback
 
 class MagibuxRelay:
     def __init__(self, port):
@@ -20,8 +21,13 @@ class MagibuxRelay:
         self.uptime = [None] * self.channels
 
     def serial_loop(self):
-        line = self.board.readline()
-        data = line.decode('utf-8').strip()
+        try:
+            line = self.board.readline()
+            data = line.decode('utf-8').strip()
+
+        except Exception:
+            traceback.print_exc()
+            return
 
         print(data)
 
