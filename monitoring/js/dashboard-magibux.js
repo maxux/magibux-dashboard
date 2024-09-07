@@ -464,7 +464,7 @@ function camera_update(caminfo) {
         // console.log(camdata);
 
         let modifier = "timestamp=" + new Date().getTime();
-        let location = "http://thumbnail.magibux.maxux.net/small-" + camdata['name'] + ".jpg?" + modifier;
+        let location = "http://proxy.thumbnail.magibux.maxux.net/small-" + camdata['name'] + ".jpg?" + modifier;
 
         if($("#camera-" + camdata['id']).length) {
             // refresh tag
