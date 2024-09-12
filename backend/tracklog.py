@@ -7,17 +7,15 @@ import os
 import dashboard
 import traceback
 from datetime import datetime
+from config import config
 
 class MagibuxTrackerBacklog:
     def __init__(self):
         self.redis = redis.Redis()
         self.queue = "tracker-backlog"
 
-        if "locationpwd" not in os.environ:
-            raise RuntimeError("No tracking password set (via environment variable)")
-
         self.baseurl = "http://gps.maxux.net"
-        self.password = os.environ["locationpwd"]
+        self.password = config['tracker-auth']
         self.headers = {"X-GPS-Auth": self.password}
 
         self.slave = dashboard.DashboardSlave("tracking")
