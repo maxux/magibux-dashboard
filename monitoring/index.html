@@ -179,9 +179,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="text-center font-monospace text-muted">Loading camera stream</div>
                     <video src="#" id="camera-selected-preview" autoplay="true" muted="true" playsinline="true">
                     </video>
+                    <div class="progress my-3 font-monospace d-visible" style="height: 30px;" id="camera-loader">
+                        <div class="progress-bar bg-secondary progress-bar-striped progress-bar-animated" role="progressbar" aria-label="Loading camera" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">Loading camera stream</div>
+                    </div>
                 </div>
             </div>
         </div>

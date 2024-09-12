@@ -457,6 +457,7 @@ function camera_select(source) {
 
     let hostid = 100 + camid;
 
+    $("#camera-loader").removeClass("d-none").addClass("d-visible");
     $("#camera-selected-label").html("Camera #" + camid);
     $("#camera-selected-preview").attr("src", "http://live.camera.magibux.maxux.net/" + hostid + "/video." + extension);
     $("#camera-selected").modal("toggle");
@@ -501,6 +502,11 @@ function camera_update(caminfo) {
         }
     }
 }
+
+const videoPlaying = document.querySelector("video");
+videoPlaying.addEventListener("playing", (event) => {
+    $("#camera-loader").removeClass("d-visible").addClass("d-none");
+});
 
 function plurial(amount, word) {
     if(amount.toFixed(0) < 2)
