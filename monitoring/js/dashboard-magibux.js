@@ -446,10 +446,19 @@ function rtinfo_parsing(response, host) {
 
 function camera_select(source) {
     source.preventDefault();
-    let camid = source.target.id.slice(-1);
-    console.log(camid);
+
+    let camid = parseInt(source.target.id.slice(-1));
+
+    let safaribrowser = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+    var extension = "mp4";
+    if(safaribrowser)
+        extension = "m3u8";
+
+    let hostid = 100 + camid;
+
     $("#camera-selected-label").html("Camera #" + camid);
-    $("#camera-selected-preview").attr("src", "http://camera.magibux.maxux.net:10001/" + camid + "/stream");
+    $("#camera-selected-preview").attr("src", "http://live.camera.magibux.maxux.net/" + hostid + "/video." + extension);
     $("#camera-selected").modal("toggle");
 }
 
@@ -475,7 +484,7 @@ function camera_update(caminfo) {
             // create new tag
             var target = "#camera-wide";
 
-            if((camdata['image_width'] / camdata['image_height']) < 1.5)
+            if((camdata['width'] / camdata['height']) < 1.5)
                 target = "#camera-regular";
 
             let link = $("<a>");
@@ -750,6 +759,7 @@ var backlog = {
     "relay": [],
     "temperature": [],
     "pressure": [],
+    "cameras": [],
 };
 
 function update_hours_time() {
@@ -845,7 +855,6 @@ function connect() {
             case "pressure":
                 return pressure_update(json['payload']);
             break;
-
 
             case "relay":
                 return relays_update(json['payload']);

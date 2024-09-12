@@ -122,3 +122,7 @@ table.devices .offline {
     width: 280px;
     margin: 0.3em;
 }
+
+video {
+    width: 100%;
+}
