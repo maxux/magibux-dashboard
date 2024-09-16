@@ -25,7 +25,7 @@ class MagibuxTracker:
             "session": None,
         }
 
-        self.slave = dashboard.DashboardSlave("tracker")
+        self.dashboard = dashboard.DashboardSlave("tracker")
 
     def session_create(self):
         response = requests.get(f"{self.baseurl}/api/push/session", headers=self.headers)
@@ -52,8 +52,8 @@ class MagibuxTracker:
             self.session_create()
 
         # sending updated state
-        self.slave.set(self.states)
-        self.slave.publish()
+        self.dashboard.set("states", self.states)
+        self.dashboard.commit()
 
     def process_dashboard(self, message):
         # ignore everything except 'location' update
@@ -91,8 +91,8 @@ class MagibuxTracker:
 
     def monitor(self):
         # sending initial state
-        self.slave.set(self.states)
-        self.slave.publish()
+        self.dashboard.set("states", self.states)
+        self.dashboard.commit()
 
         while True:
             message = self.subs.get_message(ignore_subscribe_messages=True, timeout=1.0)
