@@ -646,7 +646,7 @@ function pressure_update(sensors) {
         let uptime = elapsed_time(sensor["time"]);
 
         if($("#pressure-" + id).length == 0) {
-            var root = $("<div>", {"id": "pressure-" + id, "class": "row"});
+            var root = $("<div>", {"id": "pressure-" + id, "class": "row", "style": "order: " + id});
 
             var namediv = $("<div>", {"class": "col-5"});
             namediv.append($("<small>", {"class": "name font-monospace"}).html(pressure_names[longid][0]));
@@ -730,7 +730,7 @@ function relays_update(state) {
             //
             // status nodes
             //
-            var root = $("<div>", {"id": "relay-channel-" + id, "class": "row"});
+            var root = $("<div>", {"id": "relay-channel-" + id, "class": "row", "style": "order: " + id});
             var nametag = $("<div>", {"class": "col-6 name"}).html(name);
 
             var relaytag = $("<div>", {"class": "col-2"});
@@ -745,7 +745,7 @@ function relays_update(state) {
             //
             // control nodes
             //
-            var root = $("<div>", {"id": "relay-control-" + id, "class": "row my-1"});
+            var root = $("<div>", {"id": "relay-control-" + id, "class": "row my-1", "style": "order: " + id});
             var nametag = $("<div>", {"class": "col-6 name"}).html(name);
 
             var relaytag = $("<div>", {"class": "col-2"});
@@ -810,10 +810,13 @@ function update_temperature_time() {
         var tag = $("#temperature-" + id + " .uptime");
 
         tag.html(uptime[1]);
+
+        /*
         tag.removeClass("text-danger");
 
         if(uptime[0] > 60)
             tag.addClass("text-danger");
+        */
     }
 }
 
