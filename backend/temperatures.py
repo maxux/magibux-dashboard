@@ -5,13 +5,14 @@ import json
 import redis
 import sys
 import traceback
+from tools.colors import color
 
 class MagibuxTemperatures:
     def __init__(self, port):
         self.board = serial.Serial(port, 9600)
         # self.queue = redis.Redis()
 
-        self.temperature = dashboard.DashboardSlave("temperature")
+        self.dashboard = dashboard.DashboardSlave("temperature")
         self.tempinfo = {}
 
     def loop(self):
@@ -23,21 +24,26 @@ class MagibuxTemperatures:
             traceback.print_exc()
             return
 
-        print(data)
+        print(f"[<] {color.blue}{data}{color.reset}")
 
         items = data.split(": ")
         # print(items)
 
         if items[0] == "sensors":
             if items[1] == "end of batch":
-                self.temperature.set(self.tempinfo)
-                self.temperature.publish()
+                self.dashboard.commit()
 
         if items[0] == "temperature":
             id = items[1]
-            value = float(items[2])
+            value = round(float(items[2]), 1)
 
-            self.tempinfo[id] = {"value": value, "changed": int(time.time())}
+            previous = self.dashboard.get(id)
+            if previous and previous["value"] == value:
+                # still up-to-date
+                return
+
+            print(f"[+] updating: {id}")
+            self.dashboard.set(id, {"value": value, "changed": int(time.time())})
 
             """ FIXME
             persistance = {
@@ -54,7 +60,7 @@ class MagibuxTemperatures:
             self.loop()
 
 if __name__ == "__main__":
-    port = "/dev/serial/by-id/usb-Arduino__www.arduino.cc__0043_950353138353517052E1-if00"
+    port = "/dev/ttyCH9344USB2"
 
     if len(sys.argv) > 1:
         port = sys.argv[1]
