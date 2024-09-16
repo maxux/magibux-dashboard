@@ -1,21 +1,33 @@
 import requests
+import time
 import dashboard
 import traceback
+import sys
 
-slave = dashboard.DashboardSlave("rtinfo")
+class MagibuxRtinfo:
+    def __init__(self):
+        self.dashboard = dashboard.DashboardSlave("rtinfo")
 
-while True:
-    print("[+] rtinfo: fetching")
+    def monitor(self):
+        while True:
+            sys.stdout.write("[+] rtinfo: fetching ... ")
 
-    try:
-        response = requests.get("http://127.0.0.1:8089/json", timeout=2)
-        slave.set(response.json())
+            try:
+                response = requests.get("http://127.0.0.1:8089/json", timeout=2)
+                data = response.json()
+                nodes = len(data["rtinfo"])
 
-        print("[+] rtinfo: %d hosts found" % len(slave.payload['rtinfo']))
+                print(f"{nodes} hosts found")
 
-        slave.publish()
+                self.dashboard.set("rtinfo", data["rtinfo"])
+                self.dashboard.commit()
 
-    except Exception:
-        traceback.print_exc()
+            except Exception:
+                print("")
+                traceback.print_exc()
 
-    slave.sleep(1)
+            time.sleep(1)
+
+if __name__ == "__main__":
+    rtinfo = MagibuxRtinfo()
+    rtinfo.monitor()
