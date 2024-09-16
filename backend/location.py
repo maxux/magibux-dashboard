@@ -16,7 +16,7 @@ class MagibuxLocator:
 
         self.frame = self.reset()
 
-        self.slave = dashboard.DashboardSlave("location")
+        self.dashboard = dashboard.DashboardSlave("location")
         self.previous = None
         self.trip = 0
 
@@ -126,8 +126,8 @@ class MagibuxLocator:
         if 'hdop' in self.frame['gga']:
             response['hdop'] = self.frame['gga']['hdop']
 
-        self.slave.set(response)
-        self.slave.publish()
+        self.dashboard.set("live", response)
+        self.dashboard.commit()
 
         # FIXME: add persistance
 
