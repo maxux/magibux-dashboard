@@ -18,7 +18,7 @@ class MagibuxTrackerBacklog:
         self.password = config['tracker-auth']
         self.headers = {"X-GPS-Auth": self.password}
 
-        self.slave = dashboard.DashboardSlave("tracking")
+        self.dashboard = dashboard.DashboardSlave("tracking")
         self.lastupdate = 0
 
         self.stats = {
@@ -39,8 +39,8 @@ class MagibuxTrackerBacklog:
             return
 
         print("notifying")
-        self.slave.set(self.stats)
-        self.slave.publish()
+        self.dashboard.set("stats", self.stats)
+        self.dashboard.commit()
 
         # persist stats
         self.redis.set("tracker-stats", json.dumps(self.stats))
