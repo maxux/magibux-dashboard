@@ -5,6 +5,7 @@ import time
 import redis
 import sys
 import traceback
+from tools.colors import color
 
 class MagibuxRelay:
     def __init__(self, port):
@@ -15,10 +16,15 @@ class MagibuxRelay:
         self.ctrlsub = self.control.pubsub()
         self.ctrlsub.subscribe(['relaying'])
 
-        self.slave = dashboard.DashboardSlave("relay")
+        self.dashboard = dashboard.DashboardSlave("relay")
         self.channels = 8
-        self.state = [None] * self.channels
-        self.uptime = [None] * self.channels
+        self.state = {}
+        self.empty = {"state": None, "changed": 0}
+
+        for id in range(self.channels):
+            channel = f"channel-{id}"
+            backfrom = self.dashboard.get(channel)
+            self.state[channel] = backfrom or self.empty.copy()
 
     def serial_loop(self):
         try:
@@ -29,32 +35,23 @@ class MagibuxRelay:
             traceback.print_exc()
             return
 
-        print(data)
+        print(f"[<] {color.blue}{data}{color.reset}")
 
         items = data.split(": ")
         # print(items)
 
-        if items[0].startswith("state"):
+        if items[0] == "state":
             state = items[1].split(" ")
 
-            merged = [(None, None)] * self.channels
-            changed = False
-
             for idx, value in enumerate(state):
-                if self.state[idx] != int(value):
-                    self.state[idx] = int(value)
-                    self.uptime[idx] = int(time.time())
+                channel = f"channel-{idx}"
 
-                    changed = True
+                if self.state[channel]["state"] != int(value):
+                    self.state[channel]["state"] = int(value)
+                    self.state[channel]["changed"] = int(time.time())
+                    self.dashboard.set(channel, self.state[channel])
 
-                # create a merged view of state and uptime
-                merged[idx] = (int(value), self.uptime[idx])
-
-            if changed:
-                print(f"[+] new state: {merged}")
-
-                self.slave.set(merged)
-                self.slave.publish()
+            self.dashboard.commit()
 
     def control_loop(self):
         message = self.ctrlsub.get_message()
@@ -67,8 +64,8 @@ class MagibuxRelay:
         try:
             payload = json.loads(message['data'])
 
-        except Exception as e:
-            print(e)
+        except Exception:
+            traceback.print_exc()
             return
 
         channel = payload['id']
@@ -84,11 +81,12 @@ class MagibuxRelay:
 
     def monitor(self):
         while True:
+            # FIXME: remote action is checked only when serial have new data
             self.control_loop()
             self.serial_loop()
 
 if __name__ == "__main__":
-    port = "/dev/serial/by-id/usb-Arduino__www.arduino.cc__0042_142353030363512160C1-if00"
+    port = "/dev/ttyCH9344USB0"
 
     if len(sys.argv) > 1:
         port = sys.argv[1]
