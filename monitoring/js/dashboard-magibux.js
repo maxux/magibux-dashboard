@@ -552,7 +552,7 @@ let temperature_sensors = {
 function temperature_update(sensors) {
     for(var id in sensors) {
         let sensor = sensors[id];
-        let value = sensor["value"].toFixed(2) + "°C";
+        let value = sensor["value"].toFixed(1) + "°C";
         let uptime = elapsed_time(sensor["changed"]);
 
         if($("#temperature-" + id).length == 0) {
@@ -596,47 +596,52 @@ function get_current_time() {
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const secondes = String(now.getSeconds()).padStart(2, '0');
-    const current_time = `${hours}:${minutes}:${secondes}`;
-    return current_time;
+
+    return hours + ":" + minutes + ":" + secondes;
 }
 
 function tanks_update(id, sensor) {
-    let unit = [0, 2, 3, 4, 9];
-    let brakes = [5, 7, 8];
-    for (var i in unit) {
-        if (unit[i] == id) {
-            if (sensor['value'] < 3)
-                return ("bg-danger text-light");
-            else if (sensor['value'] < 6)
-                return ("bg-warning text-dark");
+    let unit = ["channel-0", "channel-2", "channel-3", "channel-4", "channel-9"];
+    let brakes = ["channel-5", "channel-7", "channel-8"];
+
+    for(let i in unit) {
+        if(unit[i] == id) {
+            if(sensor['value'] < 3)
+                return "bg-danger text-light";
+
+            else if(sensor['value'] < 6)
+                return "bg-warning text-dark";
+
             else
-                return ("bg-success text-light");
+                return "bg-success text-light";
         }
     }
-    for (var f in unit) {
-        if (brakes[f] == id)
+
+    for(let f in unit) {
+        if(brakes[f] == id)
             return (sensor['value'] > 1.2 ? "bg-info text-dark" : "bg-secondary text-dark");
     }
+
     return (sensor['value'] > 1.4 ? "bg-success text-light" : "bg-secondary text-dark");
 }
 
-let pressure_names = [
-    ["Brakes: Front", "tank"],
-    ["(unknown)", "tank"],
-    ["Brakes: Back", "tank"],
-    ["Brakes: Park", "tank"],
-    ["(unknown)", "tank"],
-    ["(unknown)", "tank"],
-    ["(unknown)", "tank"],
-    ["(unknown)", "tank"],
-    ["Brakes: Front", "live"],
-    ["Brakes: Back", "live"],
-    ["(unknown)", "tank"],
-];
+let pressure_names = {
+    "channel-0": ["Brakes: Front", "tank"],
+    "channel-1": ["(unknown)", "tank"],
+    "channel-2": ["Brakes: Back", "tank"],
+    "channel-3": ["Brakes: Park", "tank"],
+    "channel-4": ["(unknown)", "tank"],
+    "channel-5": ["(unknown)", "tank"],
+    "channel-6": ["(unknown)", "tank"],
+    "channel-7": ["(unknown)", "tank"],
+    "channel-8": ["Brakes: Front", "live"],
+    "channel-9": ["Brakes: Back", "live"],
+};
 
 function pressure_update(sensors) {
-    for(var id in sensors) {
-        let sensor = sensors[id];
+    for(var longid in sensors) {
+        let id = longid.slice(8);
+        let sensor = sensors[longid];
         let value = sensor['value'].toFixed(2) + " bar";
         let uptime = elapsed_time(sensor["time"]);
 
@@ -644,7 +649,7 @@ function pressure_update(sensors) {
             var root = $("<div>", {"id": "pressure-" + id, "class": "row"});
 
             var namediv = $("<div>", {"class": "col-5"});
-            namediv.append($("<small>", {"class": "name font-monospace"}).html(pressure_names[id][0]));
+            namediv.append($("<small>", {"class": "name font-monospace"}).html(pressure_names[longid][0]));
 
             var valdiv = $("<div>", {"class": "col-3"});
             valdiv.append($("<span>", {"class": "value badge rounded-pill bg-info text-dark"}).html(value));
@@ -657,13 +662,15 @@ function pressure_update(sensors) {
         }
 
         // update value with correct colorartion
-        let color = tanks_update(id, sensor);
+        let color = tanks_update(longid, sensor);
         $("#pressure-" + id + " .value").removeClass("bg-success bg-dark bg-info bg-secondary text-dark text-light bg-warning bg-danger").addClass(color).html(value);
         $("#pressure-" + id + " .uptime").html(uptime[1]);
     }
 }
 
-function location_update(location) {
+function location_update(root) {
+    let location = root["live"];
+
     let lat = location['coord']['lat'].toFixed(6);
     let lng = location['coord']['lng'].toFixed(6);
     let place = location['place'];
@@ -676,7 +683,9 @@ function location_update(location) {
     $("#odometer").html((location['odometer'] / 1000).toFixed(2));
 }
 
-function tracker_update(tracker) {
+function tracker_update(root) {
+    let tracker = root["states"];
+
     var status = "Streaming live update";
     var color = "text-bg-success";
 
@@ -689,7 +698,9 @@ function tracker_update(tracker) {
     $("#tracker-transmitter").addClass(color).html(status);
 }
 
-function tracking_update(tracking) {
+function tracking_update(root) {
+    let tracking = root["stats"];
+
     $("#tracking-received").html(tracking['received']);
     $("#tracking-sent").html(tracking['sent']);
     $("#tracking-failed").html(tracking['failed']);
@@ -697,27 +708,29 @@ function tracking_update(tracking) {
 }
 
 function relays_update(state) {
-    let names = [
-        "Light - Main Service",
-        "Light - Front Pannel",
-        "Light - LED Bar (left)",
-        "Light - LED Bar (right)",
-        "Drink - Main Fridge",
-        "Cameras - Primary",
-        "Cameras - Secondary",
-        "Light - Infrared",
-    ];
+    let names = {
+        "channel-0": "Light - Main Service",
+        "channel-1": "Light - Front Pannel",
+        "channel-2": "Light - LED Bar (left)",
+        "channel-3": "Light - LED Bar (right)",
+        "channel-4": "Drink - Main Fridge",
+        "channel-5": "Cameras - Primary",
+        "channel-6": "Cameras - Secondary",
+        "channel-7": "Light - Infrared",
+    };
 
-    for(var channel in state) {
-        let value = state[channel][0] ? "Online" : "Offline";
+    for(let channel in state) {
+        let relay = state[channel];
+        let id = channel.slice(8);
+        let value = relay["state"] ? "Online" : "Offline";
         let name = names[channel];
-        let uptime = elapsed_time(state[channel][1]);
+        let uptime = elapsed_time(relay["changed"]);
 
-        if($("#relay-channel-" + channel).length == 0) {
+        if($("#relay-channel-" + id).length == 0) {
             //
             // status nodes
             //
-            var root = $("<div>", {"id": "relay-channel-" + channel, "class": "row"});
+            var root = $("<div>", {"id": "relay-channel-" + id, "class": "row"});
             var nametag = $("<div>", {"class": "col-6 name"}).html(name);
 
             var relaytag = $("<div>", {"class": "col-2"});
@@ -732,16 +745,16 @@ function relays_update(state) {
             //
             // control nodes
             //
-            var root = $("<div>", {"id": "relay-control-" + channel, "class": "row my-1"});
+            var root = $("<div>", {"id": "relay-control-" + id, "class": "row my-1"});
             var nametag = $("<div>", {"class": "col-6 name"}).html(name);
 
             var relaytag = $("<div>", {"class": "col-2"});
             relaytag.append($("<span>", {"class": "value badge rounded-pill bg-dark"}).html(value));
 
-            let btnon = $("<a>", {"class": "btn btn-success btn-sm relay-button mx-1", "href": "/control/poweron/" + channel}).html("On");
+            let btnon = $("<a>", {"class": "btn btn-success btn-sm relay-button mx-1", "href": "/control/poweron/" + id}).html("On");
             btnon.on("click", monitoring_ajax);
 
-            let btnoff = $("<a>", {"class": "btn btn-danger btn-sm relay-button", "href": "/control/poweroff/" + channel}).html("Off");
+            let btnoff = $("<a>", {"class": "btn btn-danger btn-sm relay-button", "href": "/control/poweroff/" + id}).html("Off");
             btnoff.on("click", monitoring_ajax);
 
             var btngroup = $("<div>", {"class": "col-4 text-end"});
@@ -752,20 +765,20 @@ function relays_update(state) {
         }
 
         // only update value
-        let color = (state[channel][0] ? "bg-success" : "bg-dark");
-        $("#relay-channel-" + channel + " .value").removeClass("bg-success bg-dark").addClass(color).html(value);
-        $("#relay-control-" + channel + " .value").removeClass("bg-success bg-dark").addClass(color).html(value);
-        $("#relay-channel-" + channel + " .uptime").html(uptime[1]);
+        let color = (relay["state"] ? "bg-success" : "bg-dark");
+        $("#relay-channel-" + id + " .value").removeClass("bg-success bg-dark").addClass(color).html(value);
+        $("#relay-control-" + id + " .value").removeClass("bg-success bg-dark").addClass(color).html(value);
+        $("#relay-channel-" + id + " .uptime").html(uptime[1]);
     }
 }
 
 var socket;
 var caminfo;
 var backlog = {
-    "relay": [],
-    "temperature": [],
-    "pressure": [],
-    "cameras": [],
+    "relay": {},
+    "temperature": {},
+    "pressure": {},
+    "cameras": {},
 };
 
 function update_hours_time() {
@@ -780,11 +793,12 @@ function recurring() {
 }
 
 function update_relays_time() {
-    for(var channel in backlog['relay']) {
+    for(let channel in backlog['relay']) {
+        let id = channel.slice(8);
         let relay = backlog['relay'][channel];
 
-        let uptime = elapsed_time(relay[1]);
-        $("#relay-channel-" + channel + " .uptime").html(uptime[1]);
+        let uptime = elapsed_time(relay["changed"]);
+        $("#relay-channel-" + id + " .uptime").html(uptime[1]);
     }
 }
 
@@ -804,8 +818,9 @@ function update_temperature_time() {
 }
 
 function update_pressure_time() {
-    for(var id in backlog['pressure']) {
-        let sensor = backlog['pressure'][id];
+    for(let longid in backlog['pressure']) {
+        let id = longid.slice(8);
+        let sensor = backlog['pressure'][longid];
 
         let uptime = elapsed_time(sensor['time']);
         $("#pressure-" + id + " .uptime").html(uptime[1]);
@@ -830,7 +845,12 @@ function connect() {
     socket.onmessage = function(msg) {
         json = JSON.parse(msg.data);
 
-        backlog[json['type']] = json['payload'];
+        if(backlog[json['type']] === undefined)
+            backlog[json['type']] = {};
+
+        for(let key in json['payload'])
+            backlog[json['type']][key] = json['payload'][key];
+
         // console.log(json);
 
         switch(json['type']) {
