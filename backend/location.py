@@ -7,10 +7,13 @@ import json
 import math
 import sys
 import traceback
+from tools.readserial import ReadLine
 
 class MagibuxLocator:
     def __init__(self, port):
         self.gps = serial.Serial(port, 9600)
+        self.reader = ReadLine(self.gps)
+
         self.parser = tools.nmea0183.GPSData()
         self.places = redis.Redis()
 
@@ -65,7 +68,7 @@ class MagibuxLocator:
 
     def loop(self):
         try:
-            line = self.gps.readline()
+            line = self.reader.readline()
             data = line.decode('utf-8').strip()
 
         except Exception:

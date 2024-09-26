@@ -6,10 +6,12 @@ import redis
 import sys
 import traceback
 from tools.colors import color
+from tools.readserial import ReadLine
 
 class MagibuxPressures:
     def __init__(self, port):
         self.board = serial.Serial(port, 9600)
+        self.reader = ReadLine(self.board)
         # self.queue = redis.Redis()
 
         self.sensors = 10
@@ -25,7 +27,7 @@ class MagibuxPressures:
 
     def loop(self):
         try:
-            line = self.board.readline()
+            line = self.reader.readline()
             data = line.decode('utf-8').strip()
 
         except Exception:
