@@ -39,7 +39,7 @@ class MagibuxTrackerBacklog:
         if self.lastupdate > time.time() - 1.5:
             return
 
-        print("notifying")
+        self.dashboard.print("[+] updating dashboard statistics")
         self.dashboard.set("stats", self.stats)
         self.dashboard.commit()
 
@@ -58,7 +58,9 @@ class MagibuxTrackerBacklog:
     def transmit(self, message):
         # FIXME: support bundle of message
 
-        print("TRANSMIT", message)
+        self.dashboard.print("[+] transmit message:")
+        print(message)
+
         try:
             url = f"{self.baseurl}/api/push/datapoint?device={self.deviceid}"
 
@@ -75,11 +77,11 @@ class MagibuxTrackerBacklog:
             return None
 
     def consume(self, queue):
-        print("CONSUME", queue)
+        self.dashboard.print(f"[+] waiting for message to transmit [{queue}]")
         message = self.redis.blpop(queue, 5.0)
 
         if not message:
-            print("Nothing found, retrying")
+            self.dashboard.print("[.] nothing new to transmit, watching again")
             return False
 
         self.stats["received"] += 1
