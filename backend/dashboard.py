@@ -11,6 +11,7 @@ class DashboardSlave():
         self.backlog = backlog
         self.redis = redis.Redis()
         self.channel = "dashboard"
+        self.booted = time.time()
 
         self.payload = {}
         self.session = {}
@@ -20,6 +21,10 @@ class DashboardSlave():
 
         if self.backlog:
             self.restore()
+
+    def print(self, message):
+        timeboot = time.time() - self.booted
+        print(f"[{timeboot: 13.5f}]{message}")
 
     def restore(self):
         data = self.redis.get(f"{self.channel}-backlog-{self.name}")
