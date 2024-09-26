@@ -10,12 +10,12 @@ from tools.readserial import ReadLine
 
 class MagibuxTemperatures:
     def __init__(self, port):
+        self.dashboard = dashboard.DashboardSlave("temperature")
+        self.dashboard.print(f"[+] initializing, serial port: {port}")
+
         self.board = serial.Serial(port, 9600)
         self.reader = ReadLine(self.board)
 
-        # self.queue = redis.Redis()
-
-        self.dashboard = dashboard.DashboardSlave("temperature")
         self.tempinfo = {}
 
     def loop(self):
@@ -27,7 +27,7 @@ class MagibuxTemperatures:
             traceback.print_exc()
             return
 
-        print(f"[<] {color.blue}{data}{color.reset}")
+        self.dashboard.print(f"[<] {color.blue}{data}{color.reset}")
 
         items = data.split(": ")
         # print(items)
@@ -45,7 +45,7 @@ class MagibuxTemperatures:
                 # still up-to-date
                 return
 
-            print(f"[+] updating: {id}")
+            self.dashboard.print(f"[+] updating: {id}")
             self.dashboard.set(id, {"value": value, "changed": int(time.time())})
 
             """ FIXME
@@ -67,8 +67,6 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 1:
         port = sys.argv[1]
-
-    print(f"[+] opening serial port: {port}")
 
     sensors = MagibuxTemperatures(port)
     sensors.monitor()
