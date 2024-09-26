@@ -40,18 +40,18 @@ class MagibuxTracker:
         self.backlogger.publish("tracker-backlog", message)
 
     def process_update(self, message):
-        print("Tracker update requested")
+        self.dashboard.print("[+] tracker update requested")
 
         if message["request"] == "transmitter-enable":
-            print("[+] transmission enabled")
+            self.dashboard.print("[+] transmission enabled")
             self.states["transmitter"] = True
 
         if message["request"] == "transmitter-disable":
-            print("[+] transmission disabled")
+            self.dashboard.print("[+] transmission disabled")
             self.states["transmitter"] = False
 
         if message["request"] == "new-session":
-            print("[+] new session requested, creating")
+            self.dashboard.print("[+] new session requested, creating")
             self.session_create()
 
         # sending updated state
@@ -64,7 +64,7 @@ class MagibuxTracker:
             return None
 
         if not self.states["transmitter"]:
-            print("Location received but transmitter disabled")
+            self.dashboard.print("[.] location received but transmitter disabled")
             return None
 
         payload = message['payload']['live']
@@ -87,7 +87,7 @@ class MagibuxTracker:
         encoded = json.dumps(frame)
         print(encoded)
 
-        print("-- BACKLOGGING --")
+        self.dashboard.print("[+] sending to backlog")
         self.backlogger.rpush("tracker-backlog", encoded)
 
         return True
