@@ -895,7 +895,12 @@ function connect() {
         }
     }
 
+    socket.onerror = function(event) {
+        console.log("websocket error", event);
+    }
+
     socket.onclose = function() {
+        console.log("websocket closed");
         $('#disconnected').show();
         setTimeout(connect, 2000);
     }
@@ -915,5 +920,6 @@ $(document).ready(function() {
     });
 
     connect();
+    recurring();
 });
 
