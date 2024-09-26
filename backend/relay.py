@@ -9,6 +9,9 @@ from tools.colors import color
 
 class MagibuxRelay:
     def __init__(self, port):
+        self.dashboard = dashboard.DashboardSlave("relay")
+        self.dashboard.print(f"[+] initializing, serial port: {port}")
+
         self.board = serial.Serial(port, 9600, timeout=0.2)
         self.queue = redis.Redis()
 
@@ -16,7 +19,6 @@ class MagibuxRelay:
         self.ctrlsub = self.control.pubsub()
         self.ctrlsub.subscribe(['relaying'])
 
-        self.dashboard = dashboard.DashboardSlave("relay")
         self.channels = 8
         self.state = {}
         self.empty = {"state": None, "changed": 0}
@@ -38,7 +40,7 @@ class MagibuxRelay:
         if len(data) == 0:
             return
 
-        print(f"[<] {color.blue}{data}{color.reset}")
+        self.dashboard.print(f"[<] {color.blue}{data}{color.reset}")
 
         items = data.split(": ")
         # print(items)
@@ -47,7 +49,7 @@ class MagibuxRelay:
             state = items[1].split(" ")
             if len(state) != self.channels:
                 # FIXME: add sentinel
-                print("[-] wrong amount of channels read")
+                self.dashboard.print("[-] wrong amount of channels read")
                 return
 
             for idx, value in enumerate(state):
@@ -79,11 +81,11 @@ class MagibuxRelay:
         print(payload)
 
         if payload["action"] == "enable":
-            print(f"[+] enabling channel: {channel}")
+            self.dashboard.print(f"[+] enabling channel: {channel}")
             self.board.write(f"E{channel}\n".encode('utf-8'))
 
         if payload["action"] == "disable":
-            print(f"[+] disabling channel: {channel}")
+            self.dashboard.print(f"[+] disabling channel: {channel}")
             self.board.write(f"D{channel}\n".encode('utf-8'))
 
     def monitor(self):
@@ -97,8 +99,6 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 1:
         port = sys.argv[1]
-
-    print(f"[+] opening serial port: {port}")
 
     relay = MagibuxRelay(port)
     relay.monitor()
