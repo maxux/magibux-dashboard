@@ -17,6 +17,7 @@ class MagibuxTracker:
         self.baseurl = "http://gps.maxux.net"
         self.password = config['tracker-auth']
         self.headers = {"X-GPS-Auth": self.password}
+        self.deviceid = 5
 
         self.backlogger = redis.Redis()
 
@@ -28,7 +29,9 @@ class MagibuxTracker:
         self.dashboard = dashboard.DashboardSlave("tracker")
 
     def session_create(self):
-        response = requests.get(f"{self.baseurl}/api/push/session", headers=self.headers)
+        url = f"{self.baseurl}/api/push/session?device={self.deviceid}"
+
+        response = requests.get(url, headers=self.headers)
         status = response.json()
 
         return (status["status"] == "success")

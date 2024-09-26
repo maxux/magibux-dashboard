@@ -17,6 +17,7 @@ class MagibuxTrackerBacklog:
         self.baseurl = "http://gps.maxux.net"
         self.password = config['tracker-auth']
         self.headers = {"X-GPS-Auth": self.password}
+        self.deviceid = 5
 
         self.dashboard = dashboard.DashboardSlave("tracking")
         self.lastupdate = 0
@@ -59,7 +60,9 @@ class MagibuxTrackerBacklog:
 
         print("TRANSMIT", message)
         try:
-            response = requests.post(f"{self.baseurl}/api/push/datapoint", headers=self.headers, data=message, timeout=1.0)
+            url = f"{self.baseurl}/api/push/datapoint?device={self.deviceid}"
+
+            response = requests.post(url, headers=self.headers, data=message, timeout=1.0)
             print(response)
 
             if response.status_code == 200:
