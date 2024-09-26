@@ -9,7 +9,7 @@ from tools.colors import color
 
 class MagibuxRelay:
     def __init__(self, port):
-        self.board = serial.Serial(port, 9600)
+        self.board = serial.Serial(port, 9600, timeout=0.2)
         self.queue = redis.Redis()
 
         self.control = redis.Redis()
@@ -35,6 +35,9 @@ class MagibuxRelay:
             traceback.print_exc()
             return
 
+        if len(data) == 0:
+            return
+
         print(f"[<] {color.blue}{data}{color.reset}")
 
         items = data.split(": ")
@@ -42,6 +45,10 @@ class MagibuxRelay:
 
         if items[0] == "state":
             state = items[1].split(" ")
+            if len(state) != self.channels:
+                # FIXME: add sentinel
+                print("[-] wrong amount of channels read")
+                return
 
             for idx, value in enumerate(state):
                 channel = f"channel-{idx}"
