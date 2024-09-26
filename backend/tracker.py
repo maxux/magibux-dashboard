@@ -67,7 +67,7 @@ class MagibuxTracker:
             print("Location received but transmitter disabled")
             return None
 
-        payload = message['payload']
+        payload = message['payload']['live']
         print(payload)
 
         now = datetime.now()
