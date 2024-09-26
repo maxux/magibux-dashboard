@@ -10,13 +10,15 @@ from tools.readserial import ReadLine
 
 class MagibuxPressures:
     def __init__(self, port):
+        self.dashboard = dashboard.DashboardSlave("pressure")
+        self.dashboard.print(f"[+] initializing, serial port: {port}")
+
         self.board = serial.Serial(port, 9600)
         self.reader = ReadLine(self.board)
         # self.queue = redis.Redis()
 
         self.sensors = 10
 
-        self.dashboard = dashboard.DashboardSlave("pressure")
         self.pressinfo = {}
         self.empty = {"value": 0, "time": 0, "way": None}
 
@@ -34,7 +36,7 @@ class MagibuxPressures:
             traceback.print_exc()
             return
 
-        print(f"[<] {color.blue}{data}{color.reset}")
+        self.dashboard.print(f"[<] {color.blue}{data}{color.reset}")
 
         items = data.split(": ")
 
@@ -42,11 +44,11 @@ class MagibuxPressures:
             values = items[1].split(" ")
 
             if len(values) != (self.sensors + 1):
-                print("[-] not enough data found")
+                self.dashboard.print("[-] not enough data found")
                 return
 
             if values[self.sensors] != "bar":
-                print("[-] malformed or incomplete values line")
+                self.dashboard.print("[-] malformed or incomplete values line")
                 return
 
             commit = False
@@ -66,7 +68,7 @@ class MagibuxPressures:
                     entry['way'] = "down" if pressure < entry['value'] else "up"
                     entry['value'] = pressure
 
-                    print(f"[+] channel {id}: setting new value")
+                    self.dashboard.print(f"[+] channel {id}: setting new value")
                     self.dashboard.set(channel, entry)
 
             self.dashboard.commit()
@@ -91,8 +93,6 @@ if __name__ == "__main__":
 
     if len(sys.argv) > 1:
         port = sys.argv[1]
-
-    print(f"[+] opening serial port: {port}")
 
     sensors = MagibuxPressures(port)
     sensors.monitor()
